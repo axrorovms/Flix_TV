@@ -1,1 +1,4 @@
-from shared.permissions import IsAdmin, IsModerator
+from shared.permissions import IsAdmin, IsModerator, AdminOrModerator
+
+
+

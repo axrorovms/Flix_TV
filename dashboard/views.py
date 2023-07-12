@@ -11,13 +11,13 @@ from movie.models import Movie, Comment, Review
 from user.models import User
 from datetime import datetime
 from django.db.models import Sum, Count
-from shared import IsModerator, IsAdmin
+from shared import IsModerator, IsAdmin, AdminOrModerator
 
 
 # Movies ----------------------------------------------------------------------------------------------
 
 class MovieList(ListAPIView):
-    # permission_classes = [IsAuthenticated, IsAdmin, IsModerator]
+    permission_classes = [IsAuthenticated, AdminOrModerator]
     queryset = Movie.objects.all()
     serializer_class = MovieListSerializer
     parser_classes = FormParser, MultiPartParser
@@ -25,15 +25,14 @@ class MovieList(ListAPIView):
 
 
 class MovieCreate(CreateAPIView):
-    # permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated, IsAdmin]
     queryset = Movie.objects.all()
     serializer_class = MovieCreateDeleteSerializer
     parser_classes = FormParser, MultiPartParser
 
 
 class MovieUpdate(UpdateAPIView):
-    # queryset = Movie.objects.all()
-    # permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated, IsAdmin]
     serializer_class = MovieCreateDeleteSerializer
     parser_classes = FormParser, MultiPartParser
     lookup_field = 'slug'
@@ -43,7 +42,7 @@ class MovieUpdate(UpdateAPIView):
 
 
 class MovieDelete(DestroyAPIView):
-    # permission_classes = [IsAuthenticated, IsAdmin, IsModerator]
+    permission_classes = [IsAuthenticated, AdminOrModerator]
     serializer_class = MovieCreateDeleteSerializer
     queryset = Movie.objects.all()
     lookup_field = 'slug'
@@ -52,7 +51,7 @@ class MovieDelete(DestroyAPIView):
 # Users ----------------------------------------------------------------------------------------------
 
 class UserList(ListAPIView):
-    # permission_classes = [IsAuthenticated, IsAdmin, IsModerator]
+    permission_classes = [IsAuthenticated, AdminOrModerator]
     queryset = User.objects.all()
     serializer_class = UserListSerializer
     parser_classes = FormParser, MultiPartParser
@@ -60,7 +59,7 @@ class UserList(ListAPIView):
 
 
 class UserCreate(CreateAPIView):
-    # permission_classes = [IsAuthenticated, IsAdmin, IsModerator]
+    permission_classes = [IsAuthenticated, AdminOrModerator]
     queryset = User.objects.all()
     serializer_class = UserCreateUpdateDeleteSerializer
     parser_classes = FormParser, MultiPartParser
@@ -68,7 +67,7 @@ class UserCreate(CreateAPIView):
 
 class UserUpdate(UpdateAPIView):
     queryset = User.objects.all()
-    # permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated, IsAdmin]
     serializer_class = UserCreateUpdateDeleteSerializer
     parser_classes = FormParser, MultiPartParser
 
@@ -77,7 +76,7 @@ class UserUpdate(UpdateAPIView):
 
 
 class UserDelete(DestroyAPIView):
-    # permission_classes = [IsAuthenticated, IsAdmin, IsModerator]
+    permission_classes = [IsAuthenticated, AdminOrModerator]
     serializer_class = UserCreateUpdateDeleteSerializer
     queryset = User.objects.all()
 
@@ -85,7 +84,7 @@ class UserDelete(DestroyAPIView):
 # Comments ----------------------------------------------------------------------------------------------
 
 class CommentList(ListAPIView):
-    # permission_classes = [IsAuthenticated, IsAdmin, IsModerator]
+    permission_classes = [IsAuthenticated, AdminOrModerator]
     queryset = Comment.objects.all()
     serializer_class = CommentListSerializer
     parser_classes = FormParser, MultiPartParser
@@ -93,14 +92,14 @@ class CommentList(ListAPIView):
 
 
 class CommentDelete(DestroyAPIView):
-    # permission_classes = [IsAuthenticated, IsAdmin, IsModerator]
+    permission_classes = [IsAuthenticated, AdminOrModerator]
     queryset = Comment.objects.all()
     serializer_class = CommentDeleteSerializer
 
 
 # Reviews --------------------------------------------------------------------------------------
 class ReviewList(ListAPIView):
-    # permission_classes = [IsAuthenticated, IsAdmin, IsModerator]
+    permission_classes = [IsAuthenticated, AdminOrModerator]
     queryset = Review.objects.all()
     serializer_class = ReviewListSerializer
     parser_classes = FormParser, MultiPartParser
@@ -108,7 +107,7 @@ class ReviewList(ListAPIView):
 
 
 class ReviewDelete(DestroyAPIView):
-    # permission_classes = [IsAuthenticated, IsAdmin, IsModerator]
+    permission_classes = [IsAuthenticated, AdminOrModerator]
     queryset = Review.objects.all()
     serializer_class = ReviewDeleteSerializer
 
@@ -116,7 +115,7 @@ class ReviewDelete(DestroyAPIView):
 # Dashboard ------------------------------------------------------------------------------------
 
 class DashboardAPIView(ListAPIView):
-    # permission_classes = [IsAuthenticated, IsAdmin, IsModerator]
+    permission_classes = [IsAuthenticated, AdminOrModerator]
     serializer_class = DashboardSerializer
 
     def get_queryset(self):
