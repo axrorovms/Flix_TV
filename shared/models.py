@@ -1,9 +1,9 @@
-from django.db import models
 from django.template.defaultfilters import slugify
+from django.db import models
 
+from django.core.validators import RegexValidator, ValidationError
 import datetime
 import uuid
-from django.core.validators import RegexValidator, ValidationError
 
 MEDIA_TYPES = {
     r'^(jpg|jpeg|png|JPG)$': 'image',

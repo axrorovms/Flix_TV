@@ -10,6 +10,7 @@ from core import settings
 from dashboard.urls import app_name
 
 # Swagger --------------------------------------------------------------------------------
+
 schema_view = get_schema_view(
     openapi.Info(
         title="Snippets API",
@@ -22,7 +23,6 @@ schema_view = get_schema_view(
     public=True,
     permission_classes=[permissions.AllowAny],
 )
-
 
 urlpatterns = [
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

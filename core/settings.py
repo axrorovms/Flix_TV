@@ -1,6 +1,6 @@
-import os
-from pathlib import Path
 from dotenv import load_dotenv
+from pathlib import Path
+import os
 
 load_dotenv()
 
@@ -119,38 +119,3 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
 EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL')
-
-REST_FRAMEWORK = {
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.IsAuthenticated',
-    # ],
-
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    # 'PAGE_SIZE': 100
-}
-
-
-# REST_FRAMEWORK
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         # 'rest_framework.authentication.BasicAuthentication',
-#         'rest_framework.authentication.SessionAuthentication',
-#         # 'rest_framework.authentication.TokenAuthentication'
-#         'rest_framework_simplejwt.authentication.JWTAuthentication',
-#     ],
-#     'DEFAULT_PARSER_CLASSES': [
-#         'rest_framework.parsers.JSONParser',
-#     ],
-#     'DATE_INPUT_FORMATS': ["%H:%M %d-%m-%Y"],
-#     'DATETIME_FORMAT': '%H:%M %d-%m-%Y',
-#     'DEFAULT_PAGINATION_CLASS': 'apps.pagination.StandardResultsSetPagination',
-#     'PAGE_SIZE': 2,
-#     # 'DEFAULT_THROTTLE_CLASSES': [
-#     #     'rest_framework.throttling.AnonRateThrottle',
-#     #     'rest_framework.throttling.UserRateThrottle'
-#     # ],
-#     'DEFAULT_THROTTLE_RATES': {
-#         'anon': '5/minute',
-#         'user': '10/minute'
-#     }
-# }

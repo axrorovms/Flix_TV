@@ -1,5 +1,6 @@
-from rest_framework.fields import IntegerField
-from rest_framework.serializers import ModelSerializer, SerializerMethodField, Serializer
+from rest_framework.serializers import ModelSerializer, Serializer, IntegerField
+from django.db.models import Sum, Count
+from datetime import datetime
 
 from movie.models import Movie, Comment, Review
 from user.models import User
@@ -78,10 +79,9 @@ class MovieListSerializer(ModelSerializer):
     def to_representation(self, instance: Movie):
         rep = super().to_representation(instance)
         if not instance.reviews.all():
-            rep['rating'] = 0.00
+            rep['rating'] = 0.0
         else:
-            rep[
-                'rating'] = f'{sum([i.rating for i in instance.reviews.all()]) / instance.reviews.all().count():.2f}'
+            rep['rating'] = f'{sum([i.rating for i in instance.reviews.all()]) / instance.reviews.all().count():.1f}'
         rep['genre'] = [i.title for i in instance.genre.all()]
         return rep
 
@@ -100,11 +100,12 @@ class TopMoviesSerializer(ModelSerializer):
     def to_representation(self, instance: Movie):
         rep = super().to_representation(instance)
         if not instance.reviews.all():
-            rep['rating'] = 0.
+            rep['rating'] = 0.0
         else:
             rep[
-                'rating'] = f'{sum([i.rating for i in instance.reviews.all()]) / instance.reviews.all().count():.2f}'
+                'rating'] = f'{sum([i.rating for i in instance.reviews.all()]) / instance.reviews.all().count():.1f}'
         rep['genre'] = [i.title for i in instance.genre.all()]
+
         return rep
 
 
@@ -126,3 +127,29 @@ class DashboardSerializer(Serializer):
     latest_movies = LatestMoviesSerializer(many=True)
     latest_users = LatestUsersSerializer(many=True)
     latest_reviews = LatestReviewsSerializer(many=True)
+
+    def get_view_sum(self):
+        movies = Movie.objects.filter(created_at__month=datetime.now().month)
+        return movies.aggregate(total_views=Sum('views'))['total_views'] or 0
+
+    def count_comments(self, movies):
+        return movies.annotate(num_comments=Count('comment')).aggregate(total_comments=Sum('num_comments'))[
+            'total_comments'] or 0
+
+    def count_reviews(self, movies):
+        return movies.annotate(num_reviews=Count('review')).aggregate(total_reviews=Sum('num_reviews'))[
+            'total_reviews'] or 0
+
+    def to_representation(self, instance):
+        movies_added = Movie.objects.filter(created_at__month=datetime.now().month)
+        rep = {}
+        rep['unique_views'] = self.get_view_sum()
+        rep['movies_added'] = movies_added.count()
+        rep['new_comments'] = self.count_comments(movies_added)
+        rep['new_reviews'] = self.count_reviews(movies_added)
+        rep['top_movies'] = TopMoviesSerializer(Movie.objects.order_by('-views')[:5], many=True).data
+        rep['latest_movies'] = LatestMoviesSerializer(Movie.objects.order_by('-release_year')[:5], many=True).data
+        rep['latest_users'] = LatestUsersSerializer(User.objects.order_by('-created_at')[:5], many=True).data
+        rep['latest_reviews'] = LatestReviewsSerializer(Review.objects.order_by('-created_at')[:5], many=True).data
+
+        return rep

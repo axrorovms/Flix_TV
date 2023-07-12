@@ -1,6 +1,6 @@
-from django.db import models
-from django_countries.fields import CountryField
 from django.core.validators import FileExtensionValidator
+from django_countries.fields import CountryField
+from django.db import models
 
 from shared.models import BaseModel, upload_name
 from movie.models import Genre

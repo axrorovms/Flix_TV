@@ -1,19 +1,13 @@
-
 from django.urls import path, include
-from flake8.formatting.default import Default
-from rest_framework.routers import DefaultRouter
+from dashboard.views import (MovieList, MovieCreate, MovieUpdate,
+                             MovieDelete, UserList, UserCreate,
+                             UserUpdate, UserDelete, CommentList,
+                             CommentDelete, ReviewList, ReviewDelete, DashboardAPIView)
 
-from dashboard.views import (MovieList, MovieCreate, MovieUpdate, MovieDelete,
-                             UserList, UserCreate, UserUpdate, UserDelete, CommentList, CommentDelete, ReviewList,
-                             ReviewDelete, DashboardAPIView)
-
-# router = DefaultRouter()
-# router.register('movies', MovieUpdate)
 
 app_name = 'dashboard'
 
 urlpatterns = [
-    # path('', include(router.urls)),
 
     # Movies --------------------------------------------------------------------------------
     path('movies/list/', MovieList.as_view(), name='movie_list'),
@@ -36,6 +30,7 @@ urlpatterns = [
     path('review/delete/<int:pk>/', ReviewDelete.as_view(), name='review_delete'),
 
     # Dashboards ----------------------------------------------------------------------------
-    path('dashboard/', DashboardAPIView.as_view(), name='dashboard'),
+    path('main/', DashboardAPIView.as_view(), name='dashboard'),
+
 
 ]
