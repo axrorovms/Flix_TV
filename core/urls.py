@@ -7,7 +7,9 @@ from drf_yasg import openapi
 from rest_framework import permissions
 
 from core import settings
+from dashboard.urls import app_name
 
+# Swagger --------------------------------------------------------------------------------
 schema_view = get_schema_view(
     openapi.Info(
         title="Snippets API",
@@ -27,7 +29,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/movie/', include('movie.urls')),
     path('api/v1/user/', include('user.urls')),
-    path('api/v1/dashboard/', include('user.urls')),
+    path('api/v1/dashboard/', include('dashboard.urls', namespace=app_name)),
 ]
 
 if settings.DEBUG:

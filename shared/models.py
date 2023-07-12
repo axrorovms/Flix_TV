@@ -20,7 +20,7 @@ FILE_TYPES = {
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    slug = models.SlugField(max_length=100, )
+    slug = models.SlugField(max_length=100, blank=True)
 
     class Meta:
         abstract = True
@@ -55,6 +55,5 @@ def upload_name(instance, filename):
         except ValidationError:
             pass
     raise ValidationError('File type is unacceptable')
-from django.db import models
 
-# Create your models here.
+

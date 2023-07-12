@@ -15,3 +15,4 @@ class Comment(MPTTModel):
 
     class Meta:
         db_table = 'comment'
+

@@ -18,7 +18,7 @@ class User(AbstractUser):
         approved = "Approved", "approved"
 
     email = models.EmailField(max_length=255, unique=True)
-    image = models.ImageField(upload_to=upload_name)
+    image = models.ImageField(upload_to=upload_name, null=True, blank=True)
     balance = models.DecimalField(max_digits=10000000, decimal_places=2, default=0)
     subscription = models.CharField(max_length=255, choices=SubscriptionChoice.choices, default=SubscriptionChoice.free)
     role = models.CharField(max_length=255, choices=RoleChoice.choices, default=RoleChoice.user)
@@ -28,4 +28,21 @@ class User(AbstractUser):
 
     class Meta:
         db_table = 'user'
+
+    @property
+    def comments(self):
+        return self.comment_set.all()
+
+    @property
+    def reviews(self):
+        return self.review_set.all()
+
+    def has_admin_permissions(self):
+        return self.role == self.RoleChoice.admin
+
+    def has_moderator_permissions(self):
+        return self.role == self.RoleChoice.moderator
+
+    def has_user_permissions(self):
+        return self.role == self.RoleChoice.user
 
