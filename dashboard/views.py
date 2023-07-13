@@ -1,4 +1,4 @@
-from rest_framework.generics import (CreateAPIView, ListAPIView, UpdateAPIView, DestroyAPIView)
+from rest_framework.generics import (CreateAPIView, ListAPIView, UpdateAPIView, DestroyAPIView, RetrieveAPIView)
 from rest_framework.parsers import FormParser, MultiPartParser
 from dashboard.pagination import StandardResultsSetPagination
 from movie.models import Movie, Comment, Review
@@ -45,6 +45,15 @@ class MovieDelete(DestroyAPIView):
     lookup_field = 'slug'
 
 
+# class MovieDetail(RetrieveAPIView):
+#     serializer_class = MovieCreateDeleteSerializer
+#     lookup_field = 'slug'
+#
+#     def get_queryset(self):
+#         slug = self.kwargs.get('slug')
+#         return Movie.objects.filter(slug=slug)
+
+
 # Users ----------------------------------------------------------------------------------------------
 
 class UserList(ListAPIView):
@@ -67,9 +76,6 @@ class UserUpdate(UpdateAPIView):
     permission_classes = [IsAdmin]
     serializer_class = UserCreateUpdateDeleteSerializer
     parser_classes = FormParser, MultiPartParser
-
-    def get_object(self):
-        return super().get_object()
 
 
 class UserDelete(DestroyAPIView):

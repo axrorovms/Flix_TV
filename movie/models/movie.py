@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from django.core.validators import FileExtensionValidator
+from django.db.models import Count, Sum
 from django_countries.fields import CountryField
 from django.db import models
 
@@ -33,6 +36,9 @@ class Movie(BaseModel):
     is_active = models.BooleanField(default=False)
     genre = models.ManyToManyField(Genre)
 
+    class Meta:
+        db_table = 'movie'
+
     def __str__(self):
         return self.title
 
@@ -44,8 +50,20 @@ class Movie(BaseModel):
     def reviews(self):
         return self.review_set.all()
 
-    class Meta:
-        db_table = 'movie'
+    @staticmethod
+    def count_reviews(movies):
+        return movies.annotate(num_reviews=Count('review')).aggregate(total_reviews=Sum('num_reviews'))[
+            'total_reviews'] or 0
+
+    @staticmethod
+    def count_comments(movies):
+        return movies.annotate(num_comments=Count('comment')).aggregate(total_comments=Sum('num_comments'))[
+            'total_comments'] or 0
+
+    @staticmethod
+    def get_view_sum():
+        movies = Movie.objects.filter(created_at__month=datetime.now().month)
+        return movies.aggregate(total_views=Sum('views'))['total_views'] or 0
 
 
 class MovieVideo(models.Model):

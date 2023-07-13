@@ -14,6 +14,7 @@ urlpatterns = [
     path('movies/create/', MovieCreate.as_view(), name='movie_create'),
     path('movies/update/<slug:slug>/', MovieUpdate.as_view(), name='movie_update'),
     path('movies/delete/<slug:slug>/', MovieDelete.as_view(), name='movie_delete'),
+    # path('movies/detail/<slug:slug>/', MovieDetail.as_view(), name='movie_detail'),
 
     # Users ---------------------------------------------------------------------------------
     path('user/list/', UserList.as_view(), name='user_list'),
