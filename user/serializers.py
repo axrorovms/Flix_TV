@@ -4,6 +4,9 @@ from django.template.defaultfilters import slugify
 import datetime
 import uuid
 from django.core.validators import RegexValidator, ValidationError
+from rest_framework import serializers
+
+from user.models import Wishlist
 
 MEDIA_TYPES = {
     r'^(jpg|jpeg|png|JPG)$': 'image',
@@ -55,3 +58,9 @@ def upload_name(instance, filename):
         except ValidationError:
             pass
     raise ValidationError('File type is unacceptable')
+
+
+class WishlistCreateModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Wishlist
+        fields = ('movie', 'user')

@@ -4,23 +4,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', True)
 
 ALLOWED_HOSTS = ['*']
 
-# Application definition
 
-# Application definition
 DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -36,6 +28,7 @@ THIRD_PARTY_APPS = [
     'drf_yasg',
     'mptt',
     'django_countries',
+    'django_filters'
 ]
 
 LOCAL_APPS = [
@@ -76,8 +69,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 AUTH_USER_MODEL = 'user.User'
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -90,8 +81,6 @@ DATABASES = {
     }
 }
 
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -108,8 +97,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -119,8 +106,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
@@ -128,8 +113,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -143,27 +126,3 @@ EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
 EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL')
 
 
-# REST_FRAMEWORK
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         # 'rest_framework.authentication.BasicAuthentication',
-#         'rest_framework.authentication.SessionAuthentication',
-#         # 'rest_framework.authentication.TokenAuthentication'
-#         'rest_framework_simplejwt.authentication.JWTAuthentication',
-#     ],
-#     'DEFAULT_PARSER_CLASSES': [
-#         'rest_framework.parsers.JSONParser',
-#     ],
-#     'DATE_INPUT_FORMATS': ["%H:%M %d-%m-%Y"],
-#     'DATETIME_FORMAT': '%H:%M %d-%m-%Y',
-#     'DEFAULT_PAGINATION_CLASS': 'apps.pagination.StandardResultsSetPagination',
-#     'PAGE_SIZE': 2,
-#     # 'DEFAULT_THROTTLE_CLASSES': [
-#     #     'rest_framework.throttling.AnonRateThrottle',
-#     #     'rest_framework.throttling.UserRateThrottle'
-#     # ],
-#     'DEFAULT_THROTTLE_RATES': {
-#         'anon': '5/minute',
-#         'user': '10/minute'
-#     }
-# }
