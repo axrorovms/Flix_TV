@@ -7,6 +7,9 @@ from drf_yasg import openapi
 from rest_framework import permissions
 
 from core import settings
+from dashboard.urls import app_name
+
+# Swagger --------------------------------------------------------------------------------
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -21,7 +24,6 @@ schema_view = get_schema_view(
     permission_classes=[permissions.AllowAny],
 )
 
-
 urlpatterns = [
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
@@ -29,11 +31,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/movie/', include('movie.urls')),
     path('api/v1/user/', include('user.urls')),
-    # path('api/v1/', include('djoser.urls')),
-    # path('api/v1/', include('djoser.urls.jwt')),
-    path('api/v1/dashboard/', include('dashboard.urls')),
+    path('api/v1/dashboard/', include('dashboard.urls', namespace=app_name)),
+    path('api/v1/find/', include('elastic_search.urls')),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
