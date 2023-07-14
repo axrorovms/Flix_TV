@@ -1,3 +1,10 @@
+from django.shortcuts import render
+from rest_framework import status
+from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.response import Response
+
+from .models import Wishlist
+from .serializers import WishlistCreateModelSerializer, WishlistListModelSerializer
 from django.contrib.auth import get_user_model, update_session_auth_hash
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.timezone import now
@@ -207,6 +214,24 @@ class UserViewSet(viewsets.ModelViewSet):
     def reset_password_confirm(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        
+        
+class WishlistCreateAPIView(CreateAPIView):
+    queryset = Wishlist.objects.all()
+    serializer_class = WishlistCreateModelSerializer
+
+    def post(self, request, *args, **kwargs):
+        wishlist, created = Wishlist.objects.get_or_create(movie_id=request.data.get('movie'),
+                                                           user_id=request.data.get('user'))
+        if not created:
+            wishlist.delete()
+            return Response({"message": "fucking deleted"})
+        return Response({"message": "fucking added"}, status.HTTP_201_CREATED)
+
+
+class WishlistListAPIView(ListAPIView):
+    queryset = Wishlist.objects.all()
+    serializer_class = WishlistListModelSerializer
 
         serializer.user.set_password(serializer.data["new_password"])
         if hasattr(serializer.user, "last_login"):

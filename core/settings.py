@@ -29,6 +29,7 @@ THIRD_PARTY_APPS = [
     'rest_framework_simplejwt',
     'mptt',
     'django_countries',
+    'django_filters',
     'django_elasticsearch_dsl',
     'django_elasticsearch_dsl_drf',
     'django_minio_backend'
@@ -103,6 +104,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -111,11 +113,13 @@ USE_I18N = True
 
 USE_TZ = True
 
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -140,7 +144,6 @@ MINIO_PUBLIC_BUCKETS = [
     "images",
     "videos"
 ]
-# MINIO_POLICY_HOOKS: List[Tuple[str, dict]] = []
 
 MINIO_URL_EXPIRY_HOURS = timedelta(days=1)
 MINIO_MEDIA_FILES_BUCKET = 'test'

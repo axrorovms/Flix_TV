@@ -68,7 +68,7 @@ class Movie(BaseModel):
 
 class MovieVideo(models.Model):
     video = models.FileField(upload_to=upload_name,
-                             validators=[FileExtensionValidator(allowed_extensions=['mp4'])],
+                             validators=[FileExtensionValidator(allowed_extensions=['jpg'])],
                              blank=True, null=True)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
 
