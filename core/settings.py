@@ -32,7 +32,7 @@ THIRD_PARTY_APPS = [
     'django_filters',
     'django_elasticsearch_dsl',
     'django_elasticsearch_dsl_drf',
-    'django_minio_backend'
+    'django_minio_backend',
     'drf_yasg',
     'djoser'
 ]

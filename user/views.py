@@ -233,15 +233,5 @@ class WishlistListAPIView(ListAPIView):
     queryset = Wishlist.objects.all()
     serializer_class = WishlistListModelSerializer
 
-        serializer.user.set_password(serializer.data["new_password"])
-        if hasattr(serializer.user, "last_login"):
-            serializer.user.last_login = now()
-        serializer.user.save()
-
-        if settings.PASSWORD_CHANGED_EMAIL_CONFIRMATION:
-            context = {"user": serializer.user}
-            to = [get_user_email(serializer.user)]
-            settings.EMAIL.password_changed_confirmation(self.request, context).send(to)
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
