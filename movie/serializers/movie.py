@@ -3,14 +3,14 @@ from movie.models import Movie, MovieVideo
 from user.models import User
 
 
-class VideoSerializer(serializers.ModelSerializer):
+class VideoSerializerModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = MovieVideo
         fields = ('video', )
 
 
 class MovieCreateModelSerializer(serializers.ModelSerializer):
-    video = VideoSerializer(many=True, read_only=True)
+    video = VideoSerializerModelSerializer(many=True, read_only=True)
 
     class Meta:
         model = Movie
