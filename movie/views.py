@@ -16,7 +16,7 @@ class CommentListAPIView(ListAPIView):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
-        comment_id = self.kwargs['comment_id']
+        comment_id = self.kwargs['id']
         return Comment.objects.filter(id=comment_id)
 
 
@@ -25,11 +25,11 @@ class CommentReplyListCreateAPIView(CreateAPIView):
     parser_classes = (MultiPartParser, FormParser)
 
     def get_queryset(self):
-        comment_id = self.kwargs['comment_id']
+        comment_id = self.kwargs['id']
         return Comment.objects.filter(parent_id=comment_id)
 
     def perform_create(self, serializer):
-        comment_id = self.kwargs['comment_id']
+        comment_id = self.kwargs['id']
         parent_comment = Comment.objects.get(id=comment_id)
         serializer.save(parent=parent_comment)
 
@@ -47,7 +47,7 @@ class ParentListAPIView(ListAPIView):
 class CommentLikeDislikeView(CreateAPIView):
     serializer_class = CommentLikeDislikeSerializer
     def create(self, request, *args, **kwargs):
-        comment_id = kwargs.get('comment_id')
+        comment_id = kwargs.get('id')
         action = request.data.get('action')
 
         try:
