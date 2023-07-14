@@ -79,6 +79,7 @@ class MovieNewestListAPIView(ListAPIView):
     filter_backends = (DjangoFilterBackend, SearchFilter)
 
 
+
 class MovieUpdateAPIView(UpdateAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieCreateModelSerializer
