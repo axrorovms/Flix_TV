@@ -22,3 +22,7 @@ class ChildSerializer(serializers.ModelSerializer):
             serializer = CommentSerializer(children, many=True, read_only=True)
             return serializer.data
         return []
+
+class CommentLikeDislikeSerializer(serializers.Serializer):
+    action = serializers.ChoiceField(choices=['like', 'dislike'])
+

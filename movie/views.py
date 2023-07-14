@@ -1,7 +1,9 @@
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Movie, Comment
-from .serializers import CommentSerializer, ChildSerializer
+from .serializers import CommentSerializer, ChildSerializer, CommentLikeDislikeSerializer
+from rest_framework.response import Response
+from rest_framework import status
 
 
 class CreateCommentAPIView(CreateAPIView):
@@ -40,3 +42,26 @@ class ParentListAPIView(ListAPIView):
         context = super().get_serializer_context()
         context['show_children'] = True
         return context
+
+
+class CommentLikeDislikeView(CreateAPIView):
+    serializer_class = CommentLikeDislikeSerializer
+    def create(self, request, *args, **kwargs):
+        comment_id = kwargs.get('comment_id')
+        action = request.data.get('action')
+
+        try:
+            comment = Comment.objects.get(id=comment_id)
+        except Comment.DoesNotExist:
+            return Response({"error": "Fucking comment 404"}, status=status.HTTP_404_NOT_FOUND)
+
+        if action == "like":
+            comment.likes += 1
+        elif action == "dislike":
+            comment.dislikes += 1
+        else:
+            return Response({"error": "Fucking bad request"}, status=status.HTTP_400_BAD_REQUEST)
+
+        comment.save()
+
+        return Response({"success": f"Fucking {action} added"}, status=status.HTTP_201_CREATED)
