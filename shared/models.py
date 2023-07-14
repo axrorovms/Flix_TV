@@ -1,9 +1,9 @@
-from django.db import models
 from django.template.defaultfilters import slugify
+from django.db import models
 
+from django.core.validators import RegexValidator, ValidationError
 import datetime
 import uuid
-from django.core.validators import RegexValidator, ValidationError
 
 MEDIA_TYPES = {
     r'^(jpg|jpeg|png|JPG)$': 'image',
@@ -20,7 +20,7 @@ FILE_TYPES = {
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    slug = models.SlugField(max_length=100, )
+    slug = models.SlugField(max_length=100, blank=True)
 
     class Meta:
         abstract = True
@@ -55,6 +55,5 @@ def upload_name(instance, filename):
         except ValidationError:
             pass
     raise ValidationError('File type is unacceptable')
-from django.db import models
 
-# Create your models here.
+

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractUser
-from django.db import models
 from shared.models import upload_name
+from django.db import models
 
 
 class User(AbstractUser):
@@ -18,8 +18,8 @@ class User(AbstractUser):
         approved = "Approved", "approved"
 
     email = models.EmailField(max_length=255, unique=True)
-    image = models.ImageField(upload_to=upload_name)
-    balance = models.DecimalField(max_digits=10000000, decimal_places=2, default=0)
+    image = models.ImageField(upload_to=upload_name, null=True, blank=True)
+    balance = models.DecimalField(max_digits=1000, decimal_places=2, default=0)
     subscription = models.CharField(max_length=255, choices=SubscriptionChoice.choices, default=SubscriptionChoice.free)
     role = models.CharField(max_length=255, choices=RoleChoice.choices, default=RoleChoice.user)
     status = models.CharField(max_length=255, choices=StatusChoice.choices, default=StatusChoice.approved)
@@ -28,3 +28,12 @@ class User(AbstractUser):
 
     class Meta:
         db_table = 'user'
+
+    @property
+    def comments(self):
+        return self.comment_set.all()
+
+    @property
+    def reviews(self):
+        return self.review_set.all()
+

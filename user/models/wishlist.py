@@ -1,7 +1,6 @@
 from django.db import models
 from user.models import User
 from movie.models import Movie
-from shared.models import BaseModel
 
 
 # Create your models here.

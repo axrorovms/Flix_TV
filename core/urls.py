@@ -8,6 +8,9 @@ from rest_framework import permissions
 from core import settings
 from user.urls import app_name as user_app_name
 from movie.urls import app_name as movie_app_name
+from dashboard.urls import app_name as dash_app_name
+
+# Swagger --------------------------------------------------------------------------------
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -22,15 +25,17 @@ schema_view = get_schema_view(
     permission_classes=[permissions.AllowAny],
 )
 
-
 urlpatterns = [
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('admin/', admin.site.urls),
     path('api/v1/user/', include('user.urls', namespace=user_app_name)),
     path('api/v1/movie/', include('movie.urls', namespace=movie_app_name)),
-    path('api/v1/dashboard/', include('dashboard.urls')),
+    path('api/v1/dashboard/', include('dashboard.urls', namespace=dash_app_name)),
+    path('api/v1/find/', include('elastic_search.urls')),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
