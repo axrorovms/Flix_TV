@@ -28,11 +28,11 @@ class Movie(BaseModel):
     country = CountryField()
     banner = models.ImageField(upload_to=upload_name, null=True, blank=True)
     photo = models.ImageField(upload_to=upload_name, null=True, blank=True)
-    type = models.CharField(max_length=255, choices=TypeChoice.choices)
+    type = models.CharField(max_length=255, choices=TypeChoice.choices, default=TypeChoice.movie)
     video_url = models.URLField(null=True, blank=True)
     status = models.CharField(max_length=255, choices=StatusChoice.choices, default=StatusChoice.free)
     views = models.BigIntegerField(default=0)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'role': User.RoleChoice.admin})
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=False)
     genre = models.ManyToManyField(Genre)
 

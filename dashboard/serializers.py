@@ -2,7 +2,7 @@ from rest_framework.serializers import ModelSerializer, Serializer, IntegerField
 from django.db.models import Sum, Count
 from datetime import datetime
 
-from movie.models import Movie, Comment, Review
+from movie.models import Movie, Comment, Review, MovieVideo
 from user.models import User
 
 
@@ -71,6 +71,12 @@ class LatestUsersSerializer(ModelSerializer):
 # Movie Serializers ----------------------------------------------------------------------------------------------
 
 
+class MovieVideoSerializer(ModelSerializer):
+    class Meta:
+        model = MovieVideo
+        fields = "__all__"
+
+
 class MovieListSerializer(ModelSerializer):
     class Meta:
         model = Movie
@@ -78,6 +84,7 @@ class MovieListSerializer(ModelSerializer):
 
 
 class MovieCreateDeleteSerializer(ModelSerializer):
+
     class Meta:
         model = Movie
         fields = "__all__"

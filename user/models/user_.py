@@ -19,7 +19,7 @@ class User(AbstractUser):
 
     email = models.EmailField(max_length=255, unique=True)
     image = models.ImageField(upload_to=upload_name, null=True, blank=True)
-    balance = models.DecimalField(max_digits=10000000, decimal_places=2, default=0)
+    balance = models.DecimalField(max_digits=1000, decimal_places=2, default=0)
     subscription = models.CharField(max_length=255, choices=SubscriptionChoice.choices, default=SubscriptionChoice.free)
     role = models.CharField(max_length=255, choices=RoleChoice.choices, default=RoleChoice.user)
     status = models.CharField(max_length=255, choices=StatusChoice.choices, default=StatusChoice.approved)

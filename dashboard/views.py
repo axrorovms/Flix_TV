@@ -45,15 +45,6 @@ class MovieDelete(DestroyAPIView):
     lookup_field = 'slug'
 
 
-# class MovieDetail(RetrieveAPIView):
-#     serializer_class = MovieCreateDeleteSerializer
-#     lookup_field = 'slug'
-#
-#     def get_queryset(self):
-#         slug = self.kwargs.get('slug')
-#         return Movie.objects.filter(slug=slug)
-
-
 # Users ----------------------------------------------------------------------------------------------
 
 class UserList(ListAPIView):

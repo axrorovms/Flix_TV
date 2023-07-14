@@ -27,12 +27,15 @@ THIRD_PARTY_APPS = [
     'drf_yasg',
     'mptt',
     'django_countries',
+    'django_elasticsearch_dsl',
+    'django_elasticsearch_dsl_drf',
 ]
 
 LOCAL_APPS = [
     'user',
     'movie',
     'dashboard',
+    # 'elastic_search.apps.ElasticSearchConfig'
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -110,6 +113,14 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Elasticsearch configuration
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'localhost:9200'
+    },
+}
 
 # SMTP settings
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
