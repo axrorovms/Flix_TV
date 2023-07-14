@@ -28,13 +28,13 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'mptt',
-    'django_countries',
     'django_filters',
     'django_elasticsearch_dsl',
     'django_elasticsearch_dsl_drf',
     'django_minio_backend',
     'drf_yasg',
-    'djoser'
+    'djoser',
+    'django_countries'
 ]
 
 LOCAL_APPS = [
@@ -218,16 +218,16 @@ DJOSER = {
     'USERNAME_RESET_CONFIRM_URL': '/username-reset/{uid}/{token}',
     # __________________________________________________
 
-    'SEND_ACTIVATION_EMAIL': False,
+    'SEND_ACTIVATION_EMAIL': True,
     # Agar Truefoydalanuvchi quyidagidan keyin elektron pochta orqali yuborilgan faollashtirish havolasini bosishi talab etilsa:
-    'SEND_CONFIRMATION_EMAIL': False,
+    'SEND_CONFIRMATION_EMAIL': True,
     # Agar bo'lsa True, ro'yxatdan o'tish yoki faollashtirish so'nggi nuqtasi foydalanuvchiga tasdiqlovchi xat yuboradi.
     # __________________________________________________
 
     # USERNAME PASSWORD CHANGED-EMAIL-CONFIRMATION
     # Agar “True”ga sozlangan boʻlsa, parolni oʻzgartirish soʻnggi
         # nuqtalari foydalanuvchiga tasdiqlovchi xat yuboradi.
-    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': False,
+    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
     # Agar “True”ga sozlangan boʻlsa, username oʻzgartirish soʻnggi
         # nuqtalari foydalanuvchiga tasdiqlovchi xat yuboradi.
     'USERNAME_CHANGED_EMAIL_CONFIRMATION': False,
@@ -243,7 +243,7 @@ DJOSER = {
     'SET_USERNAME_RETYPE':False,
     # Agar bo'lsa , parol tengligini tekshirish uchun oxirgi nuqtaga o'tishingiz
         # True kerak .re_new_password/users/set_password/
-    'SET_PASSWORD_RETYPE':False,
+    'SET_PASSWORD_RETYPE':True,
     # __________________________________________________
 
     # USERNAME OR PASSWORD RESET CONFIRM RETYPE

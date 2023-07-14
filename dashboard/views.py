@@ -1,16 +1,30 @@
+from datetime import datetime
+
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework.generics import (CreateAPIView, ListAPIView, UpdateAPIView, DestroyAPIView, RetrieveAPIView)
+from rest_framework.generics import (CreateAPIView, ListAPIView, UpdateAPIView, DestroyAPIView)
 from rest_framework.parsers import FormParser, MultiPartParser
-from dashboard.pagination import StandardResultsSetPagination
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from movie.models import Movie, Comment, Review, MovieVideo
 from shared import IsAdmin, AdminOrModerator
 from user.models import User
-from dashboard.serializers import (MovieListSerializer, MovieCreateDeleteSerializer,
-                                   UserListSerializer, UserCreateUpdateDeleteSerializer,
-                                   CommentListSerializer, CommentDeleteSerializer,
-                                   ReviewListSerializer, ReviewDeleteSerializer,
-                                   DashboardSerializer)
+from dashboard.pagination import StandardResultsSetPagination
+from dashboard.serializers import (
+    MovieListSerializer,
+    MovieCreateDeleteSerializer,
+    UserListSerializer,
+    UserCreateUpdateDeleteSerializer,
+    CommentListSerializer,
+    CommentDeleteSerializer,
+    ReviewListSerializer,
+    ReviewDeleteSerializer,
+    TopMoviesSerializer,
+    LatestMoviesSerializer,
+    LatestUsersSerializer,
+    LatestReviewsSerializer,
+)
 
 videos_params = openapi.Parameter(
     'videos', openapi.IN_FORM,
@@ -18,6 +32,8 @@ videos_params = openapi.Parameter(
     type=openapi.TYPE_ARRAY,
     items=openapi.Items(type=openapi.TYPE_FILE),
     required=False)
+
+
 # Movies -------------------------------------------------------------------------------------
 
 class MovieList(ListAPIView):
@@ -26,13 +42,6 @@ class MovieList(ListAPIView):
     serializer_class = MovieListSerializer
     parser_classes = FormParser, MultiPartParser
     pagination_class = StandardResultsSetPagination
-
-
-# class MovieCreate(CreateAPIView):
-#     permission_classes = [IsAdmin]
-#     queryset = Movie.objects.all()
-#     serializer_class = MovieCreateDeleteSerializer
-#     parser_classes = FormParser, MultiPartParser
 
 
 class MovieCreate(CreateAPIView):
@@ -82,20 +91,6 @@ class UserList(ListAPIView):
     pagination_class = StandardResultsSetPagination
 
 
-class UserCreate(CreateAPIView):
-    permission_classes = [AdminOrModerator]
-    queryset = User.objects.all()
-    serializer_class = UserCreateUpdateDeleteSerializer
-    parser_classes = FormParser, MultiPartParser
-
-
-class UserUpdate(UpdateAPIView):
-    queryset = User.objects.all()
-    permission_classes = [IsAdmin]
-    serializer_class = UserCreateUpdateDeleteSerializer
-    parser_classes = FormParser, MultiPartParser
-
-
 class UserDelete(DestroyAPIView):
     permission_classes = [AdminOrModerator]
     serializer_class = UserCreateUpdateDeleteSerializer
@@ -136,7 +131,19 @@ class ReviewDelete(DestroyAPIView):
 
 # Dashboard ------------------------------------------------------------------------------------
 
-class DashboardAPIView(ListAPIView):
-    queryset = Movie.objects.all()
+class DashboardAPIView(APIView):
     permission_classes = [AdminOrModerator]
-    serializer_class = DashboardSerializer
+
+    def get(self, request, format=None):
+        movies_added = Movie.objects.filter(created_at__month=datetime.now().month)
+        rep = dict()
+        rep['unique_views'] = Movie.get_view_sum()
+        rep['movies_added'] = movies_added.count()
+        rep['new_comments'] = Movie.count_comments(movies_added)
+        rep['new_reviews'] = Movie.count_reviews(movies_added)
+        rep['top_movies'] = TopMoviesSerializer(Movie.objects.order_by('-views')[:5], many=True).data
+        rep['latest_movies'] = LatestMoviesSerializer(Movie.objects.order_by('-release_year')[:5], many=True).data
+        rep['latest_users'] = LatestUsersSerializer(User.objects.order_by('-created_at')[:5], many=True).data
+        rep['latest_reviews'] = LatestReviewsSerializer(Review.objects.order_by('-created_at')[:5], many=True).data
+
+        return Response(rep)

@@ -2,6 +2,7 @@ from django_elasticsearch_dsl_drf.constants import SUGGESTER_COMPLETION
 from django_elasticsearch_dsl_drf.filter_backends import SearchFilterBackend, SuggesterFilterBackend, \
     FunctionalSuggesterFilterBackend
 from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
+from rest_framework.permissions import AllowAny
 
 import shared.pagination
 from elastic_search.serializers import MovieDocumentSerializer
@@ -14,7 +15,8 @@ class MovieDocumentViewSet(DocumentViewSet):
     queryset = Movie.objects.all()
     document = MovieDocument
     serializer_class = MovieDocumentSerializer
-    # pagination_class = StandardResultsSetPagination
+    pagination_class = StandardResultsSetPagination
+    permission_classes = (AllowAny,)
 
     filter_backends = [SearchFilterBackend, SuggesterFilterBackend]
     search_fields = (
@@ -33,6 +35,5 @@ class MovieDocumentViewSet(DocumentViewSet):
     # def get_queryset(self):
     #     print(self.request.query_params.get('search'))
     #     return Movie.objects.all()
-
 
 # http://127.0.0.1:8000/api/v1/find/movies/suggest/?name__completion=dean

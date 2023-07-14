@@ -120,20 +120,3 @@ class LatestMoviesSerializer(ModelSerializer):
         fields = ('id', 'title', 'type', 'status')
 
 
-# Dashboard Serializers ----------------------------------------------------------------------------------------------
-
-
-class DashboardSerializer(Serializer):
-    def to_representation(self, instance):
-        movies_added = Movie.objects.filter(created_at__month=datetime.now().month)
-        rep = dict()
-        rep['unique_views'] = Movie.get_view_sum()
-        rep['movies_added'] = movies_added.count()
-        rep['new_comments'] = Movie.count_comments(movies_added)
-        rep['new_reviews'] = Movie.count_reviews(movies_added)
-        rep['top_movies'] = TopMoviesSerializer(Movie.objects.order_by('-views')[:5], many=True).data
-        rep['latest_movies'] = LatestMoviesSerializer(Movie.objects.order_by('-release_year')[:5], many=True).data
-        rep['latest_users'] = LatestUsersSerializer(User.objects.order_by('-created_at')[:5], many=True).data
-        rep['latest_reviews'] = LatestReviewsSerializer(Review.objects.order_by('-created_at')[:5], many=True).data
-
-        return rep

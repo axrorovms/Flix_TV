@@ -8,7 +8,7 @@ mig:
 
 
 reindex:
-	python manage.py search_index --rebuild
+	python3 manage.py search_index --rebuild
 
 
 install-req:

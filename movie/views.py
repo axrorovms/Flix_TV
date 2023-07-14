@@ -1,27 +1,26 @@
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.filters import SearchFilter
-
-from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView, RetrieveAPIView, ListCreateAPIView
 from django_filters.rest_framework import DjangoFilterBackend
-
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from user.models import User
+
+from rest_framework import status
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
+from rest_framework.filters import SearchFilter
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView, RetrieveAPIView
+
 from movie.models import Movie, Genre, MovieVideo, Review, Comment
-from movie.serializers import MovieDetailModelSerializer, MovieListModelSerializer, MovieCreateModelSerializer,GenreCreateModelSerializer, GenreListModelSerializer, ReviewListModelSerializer, ReviewCreateModelSerializer, CommentSerializer, ChildSerializer, CommentLikeDislikeSerializer
+from movie.serializers import MovieDetailModelSerializer, MovieListModelSerializer, MovieCreateModelSerializer, \
+    GenreCreateModelSerializer, GenreListModelSerializer, ReviewListModelSerializer, ReviewCreateModelSerializer, \
+    CommentSerializer, ChildSerializer, CommentLikeDislikeSerializer
 from movie.filters import Moviefilter
+
 videos_params = openapi.Parameter(
     'videos', openapi.IN_FORM,
     description="test manual param",
     type=openapi.TYPE_ARRAY,
     items=openapi.Items(type=openapi.TYPE_FILE),
     required=False)
-
-from rest_framework.pagination import PageNumberPagination
 
 
 class MovieListPagination(PageNumberPagination):
@@ -76,7 +75,6 @@ class MovieNewestListAPIView(ListAPIView):
     queryset = Movie.objects.order_by('-release_year')
     serializer_class = MovieListModelSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter)
-
 
 
 class MovieUpdateAPIView(UpdateAPIView):
@@ -134,6 +132,7 @@ class ReviewListAPIView(ListAPIView):
         slug = self.kwargs['slug']
         return ReviewListModelSerializer.get_review(slug)
 
+
 class CreateCommentAPIView(CreateAPIView):
     serializer_class = CommentSerializer
     parser_classes = (MultiPartParser, FormParser)
@@ -174,6 +173,7 @@ class ParentListAPIView(ListAPIView):
 
 class CommentLikeDislikeView(CreateAPIView):
     serializer_class = CommentLikeDislikeSerializer
+
     def create(self, request, *args, **kwargs):
         comment_id = kwargs.get('id')
         action = request.data.get('action')
