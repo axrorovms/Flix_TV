@@ -22,9 +22,9 @@ class Movie(BaseModel):
 
     title = models.CharField(max_length=255)
     description = models.TextField()
-    release_year = models.IntegerField()
-    film_time_duration = models.IntegerField()
-    age_limit = models.IntegerField()
+    release_year = models.IntegerField(default=2000)
+    film_time_duration = models.IntegerField(default=200)
+    age_limit = models.IntegerField(default=20)
     country = CountryField()
     banner = models.ImageField(upload_to=upload_name, null=True, blank=True)
     photo = models.ImageField(upload_to=upload_name, null=True, blank=True)

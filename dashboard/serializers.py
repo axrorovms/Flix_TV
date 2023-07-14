@@ -83,11 +83,18 @@ class MovieListSerializer(ModelSerializer):
         fields = ('slug', 'title', 'type', 'views', 'status', 'created_at', 'is_active')
 
 
+class VideoSerializer(ModelSerializer):
+    class Meta:
+        model = MovieVideo
+        fields = ('video', )
+
+
 class MovieCreateDeleteSerializer(ModelSerializer):
+    video = VideoSerializer(many=True, read_only=True)
 
     class Meta:
         model = Movie
-        fields = "__all__"
+        fields = ('title', 'slug', 'user', 'genre', 'video')
 
 
 class TopMoviesSerializer(ModelSerializer):

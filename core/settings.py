@@ -1,3 +1,6 @@
+from datetime import timedelta
+from typing import List, Tuple
+
 from dotenv import load_dotenv
 from pathlib import Path
 import os
@@ -29,6 +32,7 @@ THIRD_PARTY_APPS = [
     'django_countries',
     'django_elasticsearch_dsl',
     'django_elasticsearch_dsl_drf',
+    'django_minio_backend'
 ]
 
 LOCAL_APPS = [
@@ -109,8 +113,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -127,6 +131,27 @@ ELASTICSEARCH_DSL = {
         'hosts': 'localhost:9200'
     },
 }
+
+# Minio
+
+MINIO_EXTERNAL_ENDPOINT = "127.0.0.1:9000"
+MINIO_EXTERNAL_ENDPOINT_USE_HTTPS = False
+MINIO_ENDPOINT = 'minio:9000'
+MINIO_ACCESS_KEY = 'minio'
+MINIO_SECRET_KEY = 'minio123'
+MINIO_USE_HTTPS = False
+MINIO_PRIVATE_BUCKETS = [
+    "test"
+]
+MINIO_PUBLIC_BUCKETS = [
+    "images",
+    "videos"
+]
+# MINIO_POLICY_HOOKS: List[Tuple[str, dict]] = []
+
+MINIO_URL_EXPIRY_HOURS = timedelta(days=1)
+MINIO_MEDIA_FILES_BUCKET = 'test'
+
 
 # SMTP settings
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
