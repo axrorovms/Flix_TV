@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractUser
-from django.db import models
 from shared.models import upload_name
+from django.db import models
 
 
 class User(AbstractUser):
@@ -37,12 +37,4 @@ class User(AbstractUser):
     def reviews(self):
         return self.review_set.all()
 
-    def has_admin_permissions(self):
-        return self.role == self.RoleChoice.admin
-
-    def has_moderator_permissions(self):
-        return self.role == self.RoleChoice.moderator
-
-    def has_user_permissions(self):
-        return self.role == self.RoleChoice.user
 

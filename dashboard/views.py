@@ -11,7 +11,7 @@ from dashboard.serializers import (MovieListSerializer, MovieCreateDeleteSeriali
                                    DashboardSerializer)
 
 
-# Movies ----------------------------------------------------------------------------------------------
+# Movies -------------------------------------------------------------------------------------
 
 class MovieList(ListAPIView):
     permission_classes = [AdminOrModerator]
@@ -45,7 +45,7 @@ class MovieDelete(DestroyAPIView):
     lookup_field = 'slug'
 
 
-# Users ----------------------------------------------------------------------------------------------
+# Users ----------------------------------------------------------------------------------------
 
 class UserList(ListAPIView):
     permission_classes = [AdminOrModerator]
@@ -75,7 +75,7 @@ class UserDelete(DestroyAPIView):
     queryset = User.objects.all()
 
 
-# Comments ----------------------------------------------------------------------------------------------
+# Comments --------------------------------------------------------------------------------------
 
 class CommentList(ListAPIView):
     permission_classes = [AdminOrModerator]
