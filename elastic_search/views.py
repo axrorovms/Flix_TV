@@ -3,15 +3,18 @@ from django_elasticsearch_dsl_drf.filter_backends import SearchFilterBackend, Su
     FunctionalSuggesterFilterBackend
 from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
 
+import shared.pagination
 from elastic_search.serializers import MovieDocumentSerializer
 from elastic_search.documents import MovieDocument
 from movie.models import Movie
+from dashboard.pagination import StandardResultsSetPagination
 
 
 class MovieDocumentViewSet(DocumentViewSet):
     queryset = Movie.objects.all()
     document = MovieDocument
     serializer_class = MovieDocumentSerializer
+    # pagination_class = StandardResultsSetPagination
 
     filter_backends = [SearchFilterBackend, SuggesterFilterBackend]
     search_fields = (
