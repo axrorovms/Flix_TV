@@ -40,8 +40,7 @@ class MovieListModelSerializer(serializers.ModelSerializer):
         if not instance.review_set.all():
             rep['rating'] = float(0.0)
         else:
-            rep[
-                'rating'] = f'{sum([i.rating for i in instance.review_set.all()]) / instance.review_set.all().count():.1f}'
+            rep['rating'] = f'{sum([i.rating for i in instance.review_set.all()]) / instance.review_set.all().count():.1f}'
         rep['videos'] = [i.video for i in instance.movievideo_set.all()]
         rep['genre'] = [i.title for i in instance.genre.all()]
         return rep
