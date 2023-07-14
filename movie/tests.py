@@ -3,7 +3,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 
 from user.models import User
-from .models import Movie, Genre, Review
+from movie.models import Movie, Genre, Review, Comment
 
 
 class MovieTest(APITestCase):
@@ -24,6 +24,13 @@ class MovieTest(APITestCase):
                                           views=99,
                                           user=self.user)
         self.movie.genre.set([self.genre.pk])
+        self.comment = Comment.objects.create(
+            author=self.user,
+            movie=self.movie,
+            text="hueifhe",
+            likes=0,
+            dislikes=0,
+        )
         self.review = Review.objects.create(text='bjhef', rating=8, author=self.user, movie=self.movie)
 
     def test_movie_add(self):
@@ -144,3 +151,46 @@ class MovieTest(APITestCase):
             "movie": self.movie.pk
         })
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+     
+    def test_comment_add(self):
+        url = reverse('movie:comments')
+        response = self.client.post(url, data={
+            "author": self.user.pk,
+            "movie": self.movie.pk,
+            "text": "hueifhe"
+        })
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_comment_add_replay(self):
+        url = reverse('movie:comments_replay', kwargs={'id': self.comment.pk})
+        response = self.client.post(url, data={
+            "author": self.user.pk,
+            "movie": self.movie.pk,
+            "text": "hueifhe",
+            "parent": self.comment.pk
+        })
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_comment_list(self):
+        url = reverse('movie:comments_list', kwargs={"id": self.comment.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = dict(*response.data)
+        self.assertEqual(list(data.keys()),
+                         ['id', 'movie', 'author', 'text', 'created_at', ])
+
+    def test_comment_like(self):
+        url = reverse('movie:comments_likes_and_dislikes', kwargs={"id": self.comment.pk})
+        response = self.client.post(url, data={
+            "action": "like",
+            "id": self.comment.pk
+        })
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_parent_list(self):
+        url = reverse('movie:parent_list', )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = dict(*response.data)
+        self.assertEqual(list(data.keys()),
+                         ['id', 'author', 'text', 'children'])

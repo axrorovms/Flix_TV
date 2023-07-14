@@ -16,5 +16,10 @@ urlpatterns = [
     path('catalog/add', views.GenreCreateAPIView.as_view(), name='catalog-add'),
     path('catalog/list', views.GenreListAPIView.as_view(), name='catalog-list'),
     path('review/add', views.ReviewCreateAPIView.as_view(), name='review-add'),
-    path('review/list/<slug:slug>', views.ReviewListAPIView.as_view(), name='review-list')
+    path('review/list/<slug:slug>', views.ReviewListAPIView.as_view(), name='review-list'),
+    path('comments', views.CreateCommentAPIView.as_view(), name='comments'),
+    path('comment', views.ParentListAPIView.as_view(), name='parent_list'),
+    path('comments/<int:id>', views.CommentListAPIView.as_view(), name='comments_list'),
+    path('comment_replay/<int:id>', views.CommentReplyListCreateAPIView.as_view(), name='comments_replay'),
+    path('comment_likes/<int:id>', views.CommentLikeDislikeView.as_view(), name='comments_likes_and_dislikes'),
 ]
