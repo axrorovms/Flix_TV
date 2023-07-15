@@ -32,7 +32,7 @@ class LatestReviewsSerializer(ModelSerializer):
 class CommentListSerializer(ModelSerializer):
     class Meta:
         model = Comment
-        fields = ('id', 'movie', 'author', 'text', 'likes', 'dislikes', 'created_at')
+        fields = ('id', 'movie', 'author', 'text', 'created_at')
 
 
 class CommentDeleteSerializer(ModelSerializer):

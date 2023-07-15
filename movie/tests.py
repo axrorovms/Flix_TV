@@ -1,5 +1,5 @@
 from django.urls import reverse
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
 
 from user.models import User
@@ -28,10 +28,9 @@ class MovieTest(APITestCase):
             author=self.user,
             movie=self.movie,
             text="hueifhe",
-            likes=0,
-            dislikes=0,
         )
         self.review = Review.objects.create(text='bjhef', rating=8, author=self.user, movie=self.movie)
+        self.client = APIClient()
 
     def test_movie_add(self):
         url = reverse('movie:movie-add')
@@ -83,7 +82,7 @@ class MovieTest(APITestCase):
                          ['title', 'release_year', 'status', 'photo', 'banner', 'rating', 'videos', 'genre'])
 
     def test_movie_detail_list(self):
-        url = reverse('movie:movie-suit', kwargs={'slug': self.movie.slug})
+        url = reverse('movie:movie-detail', kwargs={'slug': self.movie.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = dict(*response.data)
@@ -151,7 +150,7 @@ class MovieTest(APITestCase):
             "movie": self.movie.pk
         })
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-     
+
     def test_comment_add(self):
         url = reverse('movie:comments')
         response = self.client.post(url, data={
@@ -180,17 +179,26 @@ class MovieTest(APITestCase):
                          ['id', 'movie', 'author', 'text', 'created_at', ])
 
     def test_comment_like(self):
-        url = reverse('movie:comments_likes_and_dislikes', kwargs={"id": self.comment.pk})
-        response = self.client.post(url, data={
-            "action": "like",
-            "id": self.comment.pk
-        })
+        url = reverse('movie:comments_likes')
+        user = User.objects.create(username='testuser')
+        self.client.force_authenticate(user=user)
+
+        response = self.client.post(url, data={"comment": self.comment.pk})
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    def test_comment_dislike(self):
+        url = reverse('movie:comments_dislikes')
+        user = User.objects.create(username='testuser')
+        self.client.force_authenticate(user=user)
+
+        response = self.client.post(url, data={"comment": self.comment.pk})
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
     def test_parent_list(self):
         url = reverse('movie:parent_list', )
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = dict(*response.data)
         self.assertEqual(list(data.keys()),
-                         ['id', 'author', 'text', 'children'])
+                         ['id', 'author', 'text', 'children', 'likes', 'dislikes'])
