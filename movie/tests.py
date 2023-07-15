@@ -151,7 +151,7 @@ class MovieTest(APITestCase):
             "movie": self.movie.pk
         })
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-     
+
     def test_comment_add(self):
         url = reverse('movie:comments')
         response = self.client.post(url, data={
@@ -180,10 +180,16 @@ class MovieTest(APITestCase):
                          ['id', 'movie', 'author', 'text', 'created_at', ])
 
     def test_comment_like(self):
-        url = reverse('movie:comments_likes_and_dislikes', kwargs={"id": self.comment.pk})
+        url = reverse('movie:comments_likes')
         response = self.client.post(url, data={
-            "action": "like",
-            "id": self.comment.pk
+            "comment": self.comment.pk
+        })
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_comment_dislike(self):
+        url = reverse('movie:comments_dislikes')
+        response = self.client.post(url, data={
+            "comment": self.comment.pk
         })
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
