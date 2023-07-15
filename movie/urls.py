@@ -21,5 +21,6 @@ urlpatterns = [
     path('comment', views.ParentListAPIView.as_view(), name='parent_list'),
     path('comments/<int:id>', views.CommentListAPIView.as_view(), name='comments_list'),
     path('comment_replay/<int:id>', views.CommentReplyListCreateAPIView.as_view(), name='comments_replay'),
-    path('comment_likes/<int:id>', views.CommentLikeDislikeView.as_view(), name='comments_likes_and_dislikes'),
+    path('comment_likes/add', views.CommentLikeView.as_view(), name='comments_likes'),
+    path('comment_dislikes/add', views.CommentDislikeView.as_view(), name='comments_dislikes'),
 ]
