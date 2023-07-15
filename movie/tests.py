@@ -82,7 +82,7 @@ class MovieTest(APITestCase):
                          ['title', 'release_year', 'status', 'photo', 'banner', 'rating', 'videos', 'genre'])
 
     def test_movie_detail_list(self):
-        url = reverse('movie:movie-suit', kwargs={'slug': self.movie.slug})
+        url = reverse('movie:movie-detail', kwargs={'slug': self.movie.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = dict(*response.data)
