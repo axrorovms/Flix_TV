@@ -23,6 +23,11 @@ class ChildSerializer(serializers.ModelSerializer):
             return serializer.data
         return []
 
+    def to_representation(self, instance: Comment):
+        rep = super().to_representation(instance)
+        rep['likes'] = instance.like_set.all().values('like').count()
+        rep['dislikes'] = instance.dislike_set.all().values('dislike').count()
+        return rep
 
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:

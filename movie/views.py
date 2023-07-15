@@ -195,5 +195,5 @@ class CommentDislikeView(CreateAPIView):
         if DisLike.objects.filter(user=user):
             DisLike.objects.filter(user=user).delete()
             return Response({"error": "Fucking dislike deleted"}, status=status.HTTP_400_BAD_REQUEST)
-        DisLike.objects.create(user=user, comment_id=comment_id, Dislike=1)
+        DisLike.objects.create(user=user, comment_id=comment_id, dislike=1)
         return Response({"success": "Fucking dislike added"}, status=status.HTTP_201_CREATED)

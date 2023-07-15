@@ -26,7 +26,7 @@ class Like(models.Model):
 
 class DisLike(models.Model):
     comment = models.ForeignKey(Comment, models.CASCADE)
-    Dislike = models.IntegerField(default=0)
+    dislike = models.IntegerField(default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
