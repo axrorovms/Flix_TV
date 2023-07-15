@@ -1,8 +1,9 @@
 from django.urls import path, include
 from dashboard.views import (MovieList, MovieCreate, MovieUpdate,
-                             MovieDelete, UserList, UserCreate,
-                             UserUpdate, UserDelete, CommentList,
-                             CommentDelete, ReviewList, ReviewDelete, DashboardAPIView)
+                             MovieDelete, UserList,
+                             UserDelete, CommentList,
+                             CommentDelete, ReviewList,
+                             ReviewDelete, DashboardAPIView)
 
 
 app_name = 'dashboard'
@@ -29,6 +30,5 @@ urlpatterns = [
 
     # Dashboards ----------------------------------------------------------------------------
     path('main/', DashboardAPIView.as_view(), name='dashboard'),
-
 
 ]
