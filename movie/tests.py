@@ -1,5 +1,5 @@
 from django.urls import reverse
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
 
 from user.models import User
@@ -30,6 +30,7 @@ class MovieTest(APITestCase):
             text="hueifhe",
         )
         self.review = Review.objects.create(text='bjhef', rating=8, author=self.user, movie=self.movie)
+        self.client = APIClient()
 
     def test_movie_add(self):
         url = reverse('movie:movie-add')
@@ -179,18 +180,21 @@ class MovieTest(APITestCase):
 
     def test_comment_like(self):
         url = reverse('movie:comments_likes')
-        response = self.client.post(url, data={
-            "comment": self.comment.pk
-        })
+        user = User.objects.create(username='testuser')
+        self.client.force_authenticate(user=user)
+
+        response = self.client.post(url, data={"comment": self.comment.pk})
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_comment_dislike(self):
         url = reverse('movie:comments_dislikes')
-        response = self.client.post(url, data={
-            "comment": self.comment.pk
-        })
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        user = User.objects.create(username='testuser')
+        self.client.force_authenticate(user=user)
 
+        response = self.client.post(url, data={"comment": self.comment.pk})
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
     def test_parent_list(self):
         url = reverse('movie:parent_list', )
         response = self.client.get(url)
