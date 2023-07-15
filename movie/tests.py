@@ -28,8 +28,6 @@ class MovieTest(APITestCase):
             author=self.user,
             movie=self.movie,
             text="hueifhe",
-            likes=0,
-            dislikes=0,
         )
         self.review = Review.objects.create(text='bjhef', rating=8, author=self.user, movie=self.movie)
 
