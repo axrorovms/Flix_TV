@@ -9,10 +9,10 @@ from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView, RetrieveAPIView
 
-from movie.models import Movie, Genre, MovieVideo, Review, Comment
+from movie.models import Movie, Genre, MovieVideo, Review, Comment, DisLike, Like
 from movie.serializers import MovieDetailModelSerializer, MovieListModelSerializer, MovieCreateModelSerializer, \
     GenreCreateModelSerializer, GenreListModelSerializer, ReviewListModelSerializer, ReviewCreateModelSerializer, \
-    CommentSerializer, ChildSerializer, CommentLikeDislikeSerializer
+    CommentSerializer, ChildSerializer, DisLikeSerializer, LikeSerializer
 from movie.filters import Moviefilter
 
 videos_params = openapi.Parameter(
@@ -189,7 +189,7 @@ class CommentDislikeView(CreateAPIView):
     queryset = DisLike.objects.all()
     serializer_class = DisLikeSerializer
 
-    def create(self, request,args, **kwargs):
+    def create(self, request, args, **kwargs):
         comment_id = request.data.get('comment')
         user = request.user
         if DisLike.objects.filter(user=user):
