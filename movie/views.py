@@ -175,7 +175,7 @@ class CommentLikeView(CreateAPIView):
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
 
-    def create(self, request, args, **kwargs):
+    def create(self, request, *args, **kwargs):
         comment_id = request.data.get('comment')
         user = request.user
         if Like.objects.filter(user=user):
@@ -189,7 +189,7 @@ class CommentDislikeView(CreateAPIView):
     queryset = DisLike.objects.all()
     serializer_class = DisLikeSerializer
 
-    def create(self, request, args, **kwargs):
+    def create(self, request, *args, **kwargs):
         comment_id = request.data.get('comment')
         user = request.user
         if DisLike.objects.filter(user=user):
