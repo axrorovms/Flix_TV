@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from movie.models.comment import Comment
+from movie.models.comment import Comment, Like, DisLike
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -23,6 +23,22 @@ class ChildSerializer(serializers.ModelSerializer):
             return serializer.data
         return []
 
-class CommentLikeDislikeSerializer(serializers.Serializer):
-    action = serializers.ChoiceField(choices=['like', 'dislike'])
+    def to_representation(self, instance: Comment):
+        rep = super().to_representation(instance)
+        rep['likes'] = instance.like_set.all().values('like').count()
+        rep['dislikes'] = instance.dislike_set.all().values('dislike').count()
+        return rep
 
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = ('comment',)
+
+
+
+
+
+class DisLikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DisLike
+        fields = ('comment',)
