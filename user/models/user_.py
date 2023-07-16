@@ -37,3 +37,4 @@ class User(AbstractUser):
     def reviews(self):
         return self.review_set.all()
 
+

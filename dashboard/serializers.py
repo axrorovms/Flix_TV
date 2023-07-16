@@ -1,6 +1,5 @@
-from rest_framework.serializers import ModelSerializer
-
 from movie.models import Movie, Comment, Review, MovieVideo
+from rest_framework.serializers import ModelSerializer
 from user.models import User
 
 
@@ -26,7 +25,6 @@ class LatestReviewsSerializer(ModelSerializer):
 
 # Comment Serializers ----------------------------------------------------
 
-
 class CommentListSerializer(ModelSerializer):
     class Meta:
         model = Comment
@@ -40,7 +38,6 @@ class CommentDeleteSerializer(ModelSerializer):
 
 
 # User Serializers ----------------------------------------------------------------------------------------------
-
 
 class UserListSerializer(ModelSerializer):
     class Meta:
@@ -68,7 +65,6 @@ class LatestUsersSerializer(ModelSerializer):
 
 # Movie Serializers ----------------------------------------------------------------------------------------------
 
-
 class MovieListSerializer(ModelSerializer):
     class Meta:
         model = Movie
@@ -78,7 +74,7 @@ class MovieListSerializer(ModelSerializer):
 class VideoSerializer(ModelSerializer):
     class Meta:
         model = MovieVideo
-        fields = ('video', )
+        fields = ('video',)
 
 
 class MovieCreateDeleteSerializer(ModelSerializer):
@@ -110,5 +106,3 @@ class LatestMoviesSerializer(ModelSerializer):
     class Meta:
         model = Movie
         fields = ('id', 'title', 'type', 'status')
-
-
