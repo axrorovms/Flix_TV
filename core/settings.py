@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = os.getenv('DEBUG', True)
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -31,10 +31,10 @@ THIRD_PARTY_APPS = [
     'django_filters',
     'django_elasticsearch_dsl',
     'django_elasticsearch_dsl_drf',
-    'django_minio_backend',
     'drf_yasg',
     'djoser',
-    'django_countries'
+    'django_countries',
+
 ]
 
 LOCAL_APPS = [
@@ -125,28 +125,41 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': 'localhost:9200'
+        'hosts': os.getenv('ELASTICSEARCH_URL')
     },
 }
 
+
+# Cache
+
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": os.getenv('REDIS_CACHE_URL'),
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient"
+#         },
+#         "KEY_PREFIX": "django"
+#     }
+# }
+
+
 # Minio
-
-MINIO_EXTERNAL_ENDPOINT = "127.0.0.1:9000"
-MINIO_EXTERNAL_ENDPOINT_USE_HTTPS = False
-MINIO_ENDPOINT = 'minio:9000'
-MINIO_ACCESS_KEY = 'minio'
-MINIO_SECRET_KEY = 'minio123'
-MINIO_USE_HTTPS = False
-MINIO_PRIVATE_BUCKETS = [
-    "test"
-]
-MINIO_PUBLIC_BUCKETS = [
-    "images",
-    "videos"
-]
-
-MINIO_URL_EXPIRY_HOURS = timedelta(days=1)
-MINIO_MEDIA_FILES_BUCKET = 'test'
+# django-storages settings
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+#
+# STATICFILES_STORAGE = 'core.custom_storages.StaticStorage'
+# STATICFILES_LOCATION = 'static'
+#
+# DATA_UPLOAD_MAX_MEMORY_SIZE = 1048576000
+# AWS_ACCESS_KEY_ID = os.getenv('MINIO_ACCESS_KEY')
+# AWS_SECRET_ACCESS_KEY = os.getenv('MINIO_SECRET_KEY')
+# AWS_STORAGE_BUCKET_NAME = os.getenv('MINIO_BUCKET_NAME')
+# AWS_S3_ENDPOINT_URL = os.getenv('MINIO_ENDPOINT')
+#
+#
+# AWS_QUERYSTRING_AUTH = True
+# AWS_QUERYSTRING_EXPIRE = 15
 
 
 # SMTP settings
