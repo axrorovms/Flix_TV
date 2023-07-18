@@ -6,12 +6,12 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView
 
-from user_auth.models import User
-from user_auth.serializers import RegisterUserModelSerializer, CheckActivationSerializer, SendEmailResetSerializer
-from user_auth.serializers.serializers import PasswordResetConfirmSerializer, UserListModelSerializer
+from users.models import User
+from users.serializers import RegisterUserModelSerializer, CheckActivationSerializer, SendEmailResetSerializer
+from users.serializers.serializers import PasswordResetConfirmSerializer, UserListModelSerializer
 
-from user_auth.models import Wishlist
-from user_auth.serializers.wishlist import WishlistCreateModelSerializer, WishlistListModelSerializer
+from users.models import Wishlist
+from users.serializers.wishlist import WishlistCreateModelSerializer, WishlistListModelSerializer
 
 
 # Create your views here.

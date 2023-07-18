@@ -1,9 +1,5 @@
-#admin:
-#	python3 manage.py createsuperuser --username admin --email admin@gmail.com --password 1
-
 admin:
-	DJANGO_SUPERUSER_USERNAME=admin DJANGO_SUPERUSER_EMAIL=admin@example.com\
- 	DJANGO_SUPERUSER_PASSWORD=1 python manage.py createsuperuser --noinput
+	python3 manage.py createsuperuser --username admin --email admin@gmail.com
 
 mig:
 	python3 manage.py makemigrations

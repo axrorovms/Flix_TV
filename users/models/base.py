@@ -6,8 +6,8 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db.models import CharField, EmailField, BooleanField, DateTimeField, DecimalField, ImageField, TextChoices
 
-from user_auth.models.manager import BaseManagerUser
-from user_auth.services.upload_files import upload_name
+from users.models.manager import BaseManagerUser
+from users.services.upload_files import upload_name
 
 
 class BaseAbstractUser(AbstractBaseUser, PermissionsMixin):
@@ -64,7 +64,7 @@ class BaseAbstractUser(AbstractBaseUser, PermissionsMixin):
 
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ['id', 'email']
+    REQUIRED_FIELDS = ['email']
 
     class Meta:
         verbose_name = _("user")

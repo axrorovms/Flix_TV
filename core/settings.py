@@ -38,7 +38,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    'user_auth',
+    'users',
     'movie',
     'dashboard',
     # 'elastic_search.apps.ElasticSearchConfig'
@@ -75,7 +75,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
-AUTH_USER_MODEL = 'user_auth.User'
+AUTH_USER_MODEL = 'users.User'
 
 DATABASES = {
     'default': {
@@ -132,16 +132,12 @@ ELASTICSEARCH_DSL = {
 
 # Cache
 
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": os.getenv('REDIS_CACHE_URL'),
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient"
-#         },
-#         "KEY_PREFIX": "django"
-#     }
-# }
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+    }
+}
 
 
 # Minio

@@ -1,6 +1,6 @@
 from django.db import models
 from movie.models import Movie
-from user_auth.models import User
+from users.models import User
 
 
 class Review(models.Model):

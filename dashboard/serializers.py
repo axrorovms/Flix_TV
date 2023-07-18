@@ -1,6 +1,6 @@
 from movie.models import Movie, Comment, Review, MovieVideo
 from rest_framework.serializers import ModelSerializer
-from user_auth.models import User
+from users.models import User
 
 
 # Review Serializers --------------------------------------------------------------------------------

@@ -7,7 +7,7 @@ from django.db import models
 
 from shared.models import BaseModel, upload_name
 from movie.models import Genre
-from user_auth.models import User
+from users.models import User
 
 
 class Movie(BaseModel):

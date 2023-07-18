@@ -1,7 +1,7 @@
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 from movie.models import Movie
-from user_auth.models import User
+from users.models import User
 
 
 class Comment(MPTTModel):

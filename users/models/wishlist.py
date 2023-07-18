@@ -1,5 +1,5 @@
 from django.db import models
-from user_auth.models import User
+from users.models import User
 from movie.models import Movie
 
 

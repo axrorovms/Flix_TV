@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from movie.models import Movie, Genre, Comment, Review
-from user_auth.models import User, Wishlist
+from users.models import User, Wishlist
 from django.test import override_settings
 from unittest import mock
 

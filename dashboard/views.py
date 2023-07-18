@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 
 from movie.models import Movie, Comment, Review, MovieVideo
 from shared import IsAdmin, AdminOrModerator
-from user_auth.models import User
+from users.models import User
 from dashboard.pagination import StandardResultsSetPagination
 from dashboard.serializers import (
     MovieListSerializer,

@@ -7,7 +7,7 @@ from rest_framework import permissions
 
 from core import settings
 
-from user_auth.urls import app_name as user_app_name
+from users.urls import app_name as user_app_name
 from movie.urls import app_name as movie_app_name
 from dashboard.urls import app_name as dash_app_name
 
@@ -32,7 +32,7 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('admin/', admin.site.urls),
 
-    path('api/v1/user/', include('user_auth.urls', namespace=user_app_name)),
+    path('api/v1/user/', include('users.urls', namespace=user_app_name)),
     path('api/v1/movie/', include('movie.urls', namespace=movie_app_name)),
     path('api/v1/dashboard/', include('dashboard.urls', namespace=dash_app_name)),
     path('api/v1/find/', include('elastic_search.urls')),
