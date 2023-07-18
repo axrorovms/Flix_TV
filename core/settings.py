@@ -220,60 +220,6 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 
-DJOSER = {
-    # Login and Logout Settings
-    'LOGIN_FIELD': 'username',
-    'LOGOUT_ON_PASSWORD_CHANGE': True,
-    # __________________________________________________
-
-    # USERNAME AND PASSWORD RESET-CONFIRM-URL
-    'PASSWORD_RESET_CONFIRM_URL': '/password-reset/{uid}/{token}',
-    'USERNAME_RESET_CONFIRM_URL': '/username-reset/{uid}/{token}',
-    # __________________________________________________
-
-    'SEND_ACTIVATION_EMAIL': True,
-    # Agar Truefoydalanuvchi quyidagidan keyin elektron pochta orqali yuborilgan faollashtirish havolasini bosishi talab etilsa:
-    'SEND_CONFIRMATION_EMAIL': True,
-    # Agar bo'lsa True, ro'yxatdan o'tish yoki faollashtirish so'nggi nuqtasi foydalanuvchiga tasdiqlovchi xat yuboradi.
-    # __________________________________________________
-
-    # USERNAME PASSWORD CHANGED-EMAIL-CONFIRMATION
-    # Agar “True”ga sozlangan boʻlsa, parolni oʻzgartirish soʻnggi
-        # nuqtalari foydalanuvchiga tasdiqlovchi xat yuboradi.
-    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
-    # Agar “True”ga sozlangan boʻlsa, username oʻzgartirish soʻnggi
-        # nuqtalari foydalanuvchiga tasdiqlovchi xat yuboradi.
-    'USERNAME_CHANGED_EMAIL_CONFIRMATION': False,
-    # __________________________________________________
-    'ACTIVATION_URL': '/activate/{uid}/{token}',
-    #Agar bo'lsa , parol tengligini tekshirish uchun oxirgi
-        # nuqtaga o'tishingiz Truekerak .re_password/users/
-    'USER_CREATE_PASSWORD_RETYPE': False,
-    # __________________________________________________
-    # SET USERNAME-OR-PASSWORD RETYPE
-    # Agar bo'lsa , foydalanuvchi nomi tengligini tasdiqlash uchun oxirgi nuqtaga o'tishingiz
-        # True kerak .re_new_username/users/set_username/
-    'SET_USERNAME_RETYPE':False,
-    # Agar bo'lsa , parol tengligini tekshirish uchun oxirgi nuqtaga o'tishingiz
-        # True kerak .re_new_password/users/set_password/
-    'SET_PASSWORD_RETYPE':True,
-    # __________________________________________________
-
-    # USERNAME OR PASSWORD RESET CONFIRM RETYPE
-    # Agar bo'lsa , parol tengligini tekshirish uchun oxirgi nuqtaga o'tishingiz
-        # True kerak .re_new_password/users/reset_password_confirm/
-    'PASSWORD_RESET_CONFIRM_RETYPE': False,
-    # Agar bo'lsa , foydalanuvchi nomi tengligini tasdiqlash uchun oxirgi nuqtaga o'tishingiz
-        # True kerak .re_new_username/users/reset_username_confirm/
-    'USERNAME_RESET_CONFIRM_RETYPE': False,
-    # __________________________________________________
-    # USERNAME OR PASSWORD  RESET_SHOW_EMAIL_NOT_FOUND
-    'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
-    'USERNAME_RESET_SHOW_EMAIL_NOT_FOUND': False,
-    'SERIALIZER': {
-
-    }
-}
 
 SWAGGER_SETTINGS = {
     'VALIDATOR_URL': 'http://localhost:8189',
