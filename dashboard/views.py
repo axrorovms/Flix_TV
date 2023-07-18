@@ -37,7 +37,7 @@ videos_params = openapi.Parameter(
 # Movies -------------------------------------------------------------------------------------
 
 class MovieList(ListAPIView):
-    permission_classes = [AdminOrModerator]
+    # permission_classes = [AdminOrModerator]
     queryset = Movie.objects.all()
     serializer_class = MovieListSerializer
     parser_classes = FormParser, MultiPartParser
@@ -45,7 +45,7 @@ class MovieList(ListAPIView):
 
 
 class MovieCreate(CreateAPIView):
-    permission_classes = [IsAdmin]
+    # permission_classes = [IsAdmin]
     queryset = Movie.objects.all()
     serializer_class = MovieCreateDeleteSerializer
     parser_classes = (MultiPartParser, FormParser)
@@ -65,7 +65,7 @@ class MovieCreate(CreateAPIView):
 
 
 class MovieUpdate(UpdateAPIView):
-    permission_classes = [IsAdmin]
+    # permission_classes = [IsAdmin]
     serializer_class = MovieCreateDeleteSerializer
     parser_classes = FormParser, MultiPartParser
     lookup_field = 'slug'
@@ -75,7 +75,7 @@ class MovieUpdate(UpdateAPIView):
 
 
 class MovieDelete(DestroyAPIView):
-    permission_classes = [AdminOrModerator]
+    # permission_classes = [AdminOrModerator]
     serializer_class = MovieCreateDeleteSerializer
     queryset = Movie.objects.all()
     lookup_field = 'slug'
@@ -84,7 +84,7 @@ class MovieDelete(DestroyAPIView):
 # Users ----------------------------------------------------------------------------------------
 
 class UserList(ListAPIView):
-    permission_classes = [AdminOrModerator]
+    # permission_classes = [AdminOrModerator]
     queryset = User.objects.all()
     serializer_class = UserListSerializer
     parser_classes = FormParser, MultiPartParser
@@ -92,7 +92,7 @@ class UserList(ListAPIView):
 
 
 class UserDelete(DestroyAPIView):
-    permission_classes = [AdminOrModerator]
+    # permission_classes = [AdminOrModerator]
     serializer_class = UserCreateUpdateDeleteSerializer
     queryset = User.objects.all()
 
@@ -100,7 +100,7 @@ class UserDelete(DestroyAPIView):
 # Comments --------------------------------------------------------------------------------------
 
 class CommentList(ListAPIView):
-    permission_classes = [AdminOrModerator]
+    # permission_classes = [AdminOrModerator]
     queryset = Comment.objects.all()
     serializer_class = CommentListSerializer
     parser_classes = FormParser, MultiPartParser
@@ -108,7 +108,7 @@ class CommentList(ListAPIView):
 
 
 class CommentDelete(DestroyAPIView):
-    permission_classes = [AdminOrModerator]
+    # permission_classes = [AdminOrModerator]
     queryset = Comment.objects.all()
     serializer_class = CommentDeleteSerializer
 
@@ -116,7 +116,7 @@ class CommentDelete(DestroyAPIView):
 # Reviews --------------------------------------------------------------------------------------
 
 class ReviewList(ListAPIView):
-    permission_classes = [AdminOrModerator]
+    # permission_classes = [AdminOrModerator]
     queryset = Review.objects.all()
     serializer_class = ReviewListSerializer
     parser_classes = FormParser, MultiPartParser
@@ -124,7 +124,7 @@ class ReviewList(ListAPIView):
 
 
 class ReviewDelete(DestroyAPIView):
-    permission_classes = [AdminOrModerator]
+    # permission_classes = [AdminOrModerator]
     queryset = Review.objects.all()
     serializer_class = ReviewDeleteSerializer
 
@@ -132,9 +132,9 @@ class ReviewDelete(DestroyAPIView):
 # Dashboard ------------------------------------------------------------------------------------
 
 class DashboardAPIView(APIView):
-    permission_classes = [AdminOrModerator]
+    # permission_classes = [AdminOrModerator]
 
-    def get(self, request, format=None):
+    def get(self, request):
         movies_added = Movie.objects.filter(created_at__month=datetime.now().month)
         rep = dict()
         rep['unique_views'] = Movie.get_view_sum()

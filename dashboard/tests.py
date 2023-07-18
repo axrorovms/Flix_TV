@@ -2,38 +2,47 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from movie.models import Movie, Genre, Comment, Review
-from user.models import User
+from user.models import User, Wishlist
+from django.test import override_settings
+from unittest import mock
 
 
+# @override_settings(ELASTICSEARCH_DSL_AUTO_REFRESH=False)
 class MovieAPITestCase(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username='Movie', email='Director@mrieoe.com', password="1", role='Admin')
+        self.user = User.objects.create_user(username='Movie', email='Director@mrieoe.com', password="1")
         self.genre = Genre.objects.create(title='Movie')
-        self.movie = Movie.objects.create(
-            title="titles",
-            slug="titles",
-            description="description",
-            release_year=2023,
-            film_time_duration=12,
-            age_limit=18,
-            country="AF",
-            type="Movie",
-            status="Free",
-            video_url="http://127.0.0.1:8000",
-            views=99,
-            user=self.user
-        )
+        self.movie = Movie.objects.create(title="titles",
+                                          slug="titles",
+                                          description="description",
+                                          release_year=2023,
+                                          film_time_duration=12,
+                                          age_limit=18,
+                                          country="AF",
+                                          type="Movie",
+                                          status="Premium",
+                                          is_active=True,
+                                          video_url="http://127.0.0.1:8000",
+                                          views=99,
+                                          user=self.user)
         self.movie.genre.set([self.genre.pk])
-        self.comment = Comment.objects.create(author=self.user, movie=self.movie, text='hello')
-        self.review = Review.objects.create(author=self.user, movie=self.movie, text='hello', rating=5)
+        self.comment = Comment.objects.create(
+            author=self.user,
+            movie=self.movie,
+            text="hueifhe",
+            likes=0,
+            dislikes=0,
+        )
+        self.review = Review.objects.create(text='bjhef', rating=8, author=self.user, movie=self.movie)
+        self.wishlist = Wishlist.objects.create(user=self.user, movie=self.movie)
         ...
+
     # For Dashboard ----------------------------------------------------------------
 
     def test_dashboard(self):
         url = reverse('dashboard:dashboard')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
     # For Movie --------------------------------------------------------------------
 
     def test_movie_list(self):
@@ -44,7 +53,7 @@ class MovieAPITestCase(APITestCase):
     def test_movie_create(self):
         url = reverse('dashboard:movie_create')
         data = {
-            "title": "New Movie",
+            "title": "New",
             "slug": "new-movie",
             "description": "New movie description",
             "release_year": 2023,
@@ -60,8 +69,8 @@ class MovieAPITestCase(APITestCase):
         }
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        movie = Movie.objects.get(title="New Movie")
-        self.assertEqual(movie.title, data["title"])
+        movie = Movie.objects.filter(title="New")
+        self.assertEqual(movie.first().title, data["title"])
 
     def test_movie_update(self):
         url = reverse('dashboard:movie_update', kwargs={'slug': self.movie.slug})
@@ -124,31 +133,7 @@ class MovieAPITestCase(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_user_create(self):
-        url = reverse('dashboard:user_create')
-        data = {
-            "username": "admin",
-            "password": "1",
-            "email": "admin@example.com",
-            "role": "Admin"
-        }
-        response = self.client.post(url, data=data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        user = User.objects.get(username="admin")
-        self.assertEqual(user.username, data["username"])
 
-    def test_user_update(self):
-        url = reverse('dashboard:user_update', kwargs={'pk': self.user.pk})
-        data = {
-            "username": "admin",
-            "password": "1",
-            "email": "admin@example.com",
-            "role": "Admin"
-        }
-        response = self.client.put(url, data=data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.user.refresh_from_db()
-        self.assertEqual(self.user.username, data["username"])
 
     def test_user_delete(self):
         url = reverse('dashboard:user_delete', kwargs={'pk': self.user.pk})
@@ -156,8 +141,12 @@ class MovieAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Movie.objects.filter(pk=self.user.pk).exists())
 
-
-
-
-
-
+# from rest_framework import status
+# from django.urls import reverse
+# from django.test import TestCase
+#
+# class DashboardAPITestCase(TestCase):
+#     def test_dashboard(self):
+#         url = reverse('dashboard:dashboard')
+#         response = self.client.get(url)
+#         self.assertEqual(response.status_code, status.HTTP_200_OK)

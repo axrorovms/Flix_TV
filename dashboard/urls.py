@@ -39,5 +39,4 @@ urlpatterns = [
     # Dashboards ----------------------------------------------------------------------------
     path('main/', DashboardAPIView.as_view(), name='dashboard'),
 
-
 ]

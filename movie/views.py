@@ -9,10 +9,10 @@ from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView, RetrieveAPIView
 
-from movie.models import Movie, Genre, MovieVideo, Review, Comment
+from movie.models import Movie, Genre, MovieVideo, Review, Comment, DisLike, Like
 from movie.serializers import MovieDetailModelSerializer, MovieListModelSerializer, MovieCreateModelSerializer, \
     GenreCreateModelSerializer, GenreListModelSerializer, ReviewListModelSerializer, ReviewCreateModelSerializer, \
-    CommentSerializer, ChildSerializer, CommentLikeDislikeSerializer
+    CommentSerializer, ChildSerializer, DisLikeSerializer, LikeSerializer
 from movie.filters import Moviefilter
 
 videos_params = openapi.Parameter(
@@ -171,25 +171,29 @@ class ParentListAPIView(ListAPIView):
         return context
 
 
-class CommentLikeDislikeView(CreateAPIView):
-    serializer_class = CommentLikeDislikeSerializer
+class CommentLikeView(CreateAPIView):
+    queryset = Like.objects.all()
+    serializer_class = LikeSerializer
 
     def create(self, request, *args, **kwargs):
-        comment_id = kwargs.get('id')
-        action = request.data.get('action')
+        comment_id = request.data.get('comment')
+        user = request.user
+        if Like.objects.filter(user=user):
+            Like.objects.filter(user=user).delete()
+            return Response({"error": "Fucking like deleted"}, status=status.HTTP_400_BAD_REQUEST)
+        Like.objects.create(user=user, comment_id=comment_id, like=1)
+        return Response({"success": "Fucking like added"}, status=status.HTTP_201_CREATED)
 
-        try:
-            comment = Comment.objects.get(id=comment_id)
-        except Comment.DoesNotExist:
-            return Response({"error": "Fucking comment 404"}, status=status.HTTP_404_NOT_FOUND)
 
-        if action == "like":
-            comment.likes += 1
-        elif action == "dislike":
-            comment.dislikes += 1
-        else:
-            return Response({"error": "Fucking bad request"}, status=status.HTTP_400_BAD_REQUEST)
+class CommentDislikeView(CreateAPIView):
+    queryset = DisLike.objects.all()
+    serializer_class = DisLikeSerializer
 
-        comment.save()
-
-        return Response({"success": f"Fucking {action} added"}, status=status.HTTP_201_CREATED)
+    def create(self, request, *args, **kwargs):
+        comment_id = request.data.get('comment')
+        user = request.user
+        if DisLike.objects.filter(user=user):
+            DisLike.objects.filter(user=user).delete()
+            return Response({"error": "Fucking dislike deleted"}, status=status.HTTP_400_BAD_REQUEST)
+        DisLike.objects.create(user=user, comment_id=comment_id, dislike=1)
+        return Response({"success": "Fucking dislike added"}, status=status.HTTP_201_CREATED)
