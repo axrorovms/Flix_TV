@@ -7,7 +7,7 @@ from rest_framework import permissions
 
 from core import settings
 
-from user.urls import app_name as user_app_name
+from user_auth.urls import app_name as user_app_name
 from movie.urls import app_name as movie_app_name
 from dashboard.urls import app_name as dash_app_name
 
