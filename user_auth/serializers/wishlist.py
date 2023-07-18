@@ -2,7 +2,7 @@
 from rest_framework import serializers
 
 from movie.models import Movie
-from user.models import Wishlist
+from user_auth.models import Wishlist
 
 
 

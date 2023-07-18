@@ -32,7 +32,7 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('admin/', admin.site.urls),
 
-    path('api/v1/user/', include('user.urls', namespace=user_app_name)),
+    path('api/v1/user/', include('user_auth.urls', namespace=user_app_name)),
     path('api/v1/movie/', include('movie.urls', namespace=movie_app_name)),
     path('api/v1/dashboard/', include('dashboard.urls', namespace=dash_app_name)),
     path('api/v1/find/', include('elastic_search.urls')),

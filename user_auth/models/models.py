@@ -1,4 +1,4 @@
-from auth_system.models.base import BaseAbstractUser
+from user_auth.models.base import BaseAbstractUser
 
 
 class User(BaseAbstractUser):

@@ -6,9 +6,9 @@ from rest_framework.settings import api_settings
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
-from auth_system.services.cache_function import getKey, deleteKey
-from auth_system.services.email import ActivationEmail
-from auth_system.constants import Messages
+from user_auth.services.cache_function import getKey, deleteKey
+from user_auth.services.email import ActivationEmail
+from user_auth.constants import Messages
 
 User = get_user_model()
 error_messages = Messages()

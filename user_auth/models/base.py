@@ -4,13 +4,17 @@ from django.core.validators import EmailValidator
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from django.db.models import CharField, EmailField, BooleanField, DateTimeField, DecimalField, ImageField
+from django.db.models import CharField, EmailField, BooleanField, DateTimeField, DecimalField, ImageField, TextChoices
 
-from auth_system.models.manager import BaseManagerUser
-from auth_system.services.upload_files import upload_name
+from user_auth.models.manager import BaseManagerUser
+from user_auth.services.upload_files import upload_name
 
 
 class BaseAbstractUser(AbstractBaseUser, PermissionsMixin):
+    class StatusChoice(TextChoices):
+        banned = "Banned", "banned"
+        approved = "Approved", "approved"
+
     username_validator = UnicodeUsernameValidator()
     email_validator = EmailValidator()
 
@@ -54,6 +58,7 @@ class BaseAbstractUser(AbstractBaseUser, PermissionsMixin):
                                     "Unselect this instead of deleting accounts."))
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
+    status = CharField(max_length=255, choices=StatusChoice.choices, default=StatusChoice.approved)
 
     objects = BaseManagerUser()
 

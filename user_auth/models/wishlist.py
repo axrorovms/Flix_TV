@@ -1,5 +1,5 @@
 from django.db import models
-from user.models import User
+from user_auth.models import User
 from movie.models import Movie
 
 
@@ -14,4 +14,3 @@ class Wishlist(models.Model):
 
     class Meta:
         db_table = 'wishlist'
-

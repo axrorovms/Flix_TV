@@ -38,7 +38,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    'user',
+    'user_auth',
     'movie',
     'dashboard',
     # 'elastic_search.apps.ElasticSearchConfig'
@@ -61,7 +61,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -75,7 +75,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
-AUTH_USER_MODEL = 'user.User'
+AUTH_USER_MODEL = 'user_auth.User'
 
 DATABASES = {
     'default': {

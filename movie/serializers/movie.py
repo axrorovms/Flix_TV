@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from movie.models import Movie, MovieVideo
-from user.models import User
+from user_auth.models import User
 
 
 class VideoSerializerModelSerializer(serializers.ModelSerializer):
