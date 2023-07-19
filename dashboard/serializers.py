@@ -37,26 +37,6 @@ class CommentDeleteSerializer(ModelSerializer):
         fields = "__all__"
 
 
-# User Serializers ----------------------------------------------------------------------------------------------
-
-class UserListSerializer(ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('id', 'image', 'first_name', 'last_name', 'email', 'username', 'subscription', 'status', 'created_at')
-
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        rep['comment'] = CommentListSerializer(instance.comments, many=True).data
-        rep['review'] = ReviewListSerializer(instance.reviews, many=True).data
-        return rep
-
-
-class UserCreateUpdateDeleteSerializer(ModelSerializer):
-    class Meta:
-        model = User
-        fields = "__all__"
-
-
 class LatestUsersSerializer(ModelSerializer):
     class Meta:
         model = User

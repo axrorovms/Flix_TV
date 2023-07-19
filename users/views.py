@@ -6,11 +6,11 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, DestroyAPIView, UpdateAPIView, \
-    RetrieveAPIView
+    RetrieveAPIView, RetrieveUpdateDestroyAPIView
 
 from users.models import User
 from users.serializers import RegisterUserModelSerializer, CheckActivationSerializer, SendEmailResetSerializer
-from users.serializers.serializers import PasswordResetConfirmSerializer, UserModelSerializer
+from users.serializers.serializers import PasswordResetConfirmSerializer, UserModelSerializer, UserListSerializer
 
 from users.models import Wishlist
 from users.serializers.wishlist import WishlistCreateModelSerializer, WishlistListModelSerializer
@@ -77,10 +77,15 @@ class PasswordResetConfirmUpdateAPIView(GenericAPIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class UserModelViewSet(ModelViewSet):
+class UserList(ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserListSerializer
+    parser_classes = FormParser, MultiPartParser
+
+
+class UserView(RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserModelSerializer
-    parser_classes = FormParser, MultiPartParser
 
 
 class WishlistCreateAPIView(CreateAPIView):

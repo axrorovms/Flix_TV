@@ -14,8 +14,6 @@ from dashboard.pagination import StandardResultsSetPagination
 from dashboard.serializers import (
     MovieListSerializer,
     MovieCreateDeleteSerializer,
-    UserListSerializer,
-    UserCreateUpdateDeleteSerializer,
     CommentListSerializer,
     CommentDeleteSerializer,
     ReviewListSerializer,

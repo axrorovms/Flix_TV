@@ -1,6 +1,5 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from users.views import UserModelViewSet
 from dashboard.views import (
     MovieList,
     MovieCreate,
@@ -16,9 +15,6 @@ from dashboard.views import (
 
 app_name = 'dashboard'
 
-router = DefaultRouter()
-router.register('users', UserModelViewSet)
-
 
 urlpatterns = [
 
@@ -27,9 +23,6 @@ urlpatterns = [
     path('movies/create/', MovieCreate.as_view(), name='movie_create'),
     path('movies/update/<slug:slug>/', MovieUpdate.as_view(), name='movie_update'),
     path('movies/delete/<slug:slug>/', MovieDelete.as_view(), name='movie_delete'),
-
-    # Users ---------------------------------------------------------------------------------
-    path('', include(router.urls)),
 
     # Comments ------------------------------------------------------------------------------
     path('comment/list/', CommentList.as_view(), name='comment_list'),

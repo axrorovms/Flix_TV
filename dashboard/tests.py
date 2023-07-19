@@ -30,12 +30,9 @@ class MovieAPITestCase(APITestCase):
             author=self.user,
             movie=self.movie,
             text="hueifhe",
-            likes=0,
-            dislikes=0,
         )
         self.review = Review.objects.create(text='bjhef', rating=8, author=self.user, movie=self.movie)
         self.wishlist = Wishlist.objects.create(user=self.user, movie=self.movie)
-        ...
 
     # For Dashboard ----------------------------------------------------------------
 
@@ -43,6 +40,7 @@ class MovieAPITestCase(APITestCase):
         url = reverse('dashboard:dashboard')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     # For Movie --------------------------------------------------------------------
 
     def test_movie_list(self):
@@ -126,20 +124,6 @@ class MovieAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Review.objects.filter(pk=self.review.pk).exists())
 
-    # For User ----------------------------------------------------------------------------------------
-
-    def test_user_list(self):
-        url = reverse('dashboard:user_list')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-
-
-    def test_user_delete(self):
-        url = reverse('dashboard:user_delete', kwargs={'pk': self.user.pk})
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(Movie.objects.filter(pk=self.user.pk).exists())
 
 # from rest_framework import status
 # from django.urls import reverse

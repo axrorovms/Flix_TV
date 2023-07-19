@@ -1,9 +1,9 @@
 from django.urls import reverse
-from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
+from rest_framework.test import APITestCase, APIClient
 
-from user.models import User
 from movie.models import Movie, Genre, Review, Comment
+from users.models import User
 
 
 class MovieTest(APITestCase):
@@ -195,6 +195,7 @@ class MovieTest(APITestCase):
         response = self.client.post(url, data={"comment": self.comment.pk})
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
     def test_parent_list(self):
         url = reverse('movie:parent_list', )
         response = self.client.get(url)

@@ -6,6 +6,7 @@ from rest_framework.settings import api_settings
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
+from dashboard.serializers import CommentListSerializer, ReviewListSerializer
 from users.services.cache_function import getKey, deleteKey
 from users.services.email import ActivationEmail
 from users.constants import Messages
@@ -85,6 +86,21 @@ class SendEmailResetSerializer(serializers.Serializer):
         self.context['user'] = user
         ActivationEmail(self.context.get('request'), self.context).send([user.email])
         return attrs
+
+
+# User Serializers ----------------------------------------------------------------------------------------------
+
+
+class UserListSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'image', 'first_name', 'last_name', 'email', 'username', 'subscription', 'status', 'created_at')
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['comment'] = CommentListSerializer(instance.comments, many=True).data
+        rep['review'] = ReviewListSerializer(instance.reviews, many=True).data
+        return rep
 
 
 class UserModelSerializer(ModelSerializer):
