@@ -87,7 +87,8 @@ class SendEmailResetSerializer(serializers.Serializer):
         return attrs
 
 
-class UserListModelSerializer(ModelSerializer):
+class UserModelSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
+

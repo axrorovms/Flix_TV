@@ -4,11 +4,12 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
-from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, DestroyAPIView, UpdateAPIView, \
+    RetrieveAPIView
 
 from users.models import User
 from users.serializers import RegisterUserModelSerializer, CheckActivationSerializer, SendEmailResetSerializer
-from users.serializers.serializers import PasswordResetConfirmSerializer, UserListModelSerializer
+from users.serializers.serializers import PasswordResetConfirmSerializer, UserModelSerializer
 
 from users.models import Wishlist
 from users.serializers.wishlist import WishlistCreateModelSerializer, WishlistListModelSerializer
@@ -77,8 +78,30 @@ class PasswordResetConfirmUpdateAPIView(GenericAPIView):
 
 class UserListAPIView(ListAPIView):
     queryset = User.objects.all()
-    serializer_class = UserListModelSerializer
+    serializer_class = UserModelSerializer
     permission_classes = (AllowAny,)
+
+
+class UserCreate(CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserModelSerializer
+
+
+class UserUpdate(UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserModelSerializer
+
+
+class UserDelete(DestroyAPIView):
+    # permission_classes = [AdminOrModerator]
+    serializer_class = UserModelSerializer
+    queryset = User.objects.all()
+
+
+class UserDetail(RetrieveAPIView):
+    # permission_classes = [AdminOrModerator]
+    serializer_class = UserModelSerializer
+    queryset = User.objects.all()
 
 
 class WishlistCreateAPIView(CreateAPIView):

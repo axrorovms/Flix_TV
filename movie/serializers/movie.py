@@ -61,7 +61,6 @@ class MovieDetailModelSerializer(serializers.ModelSerializer):
         rep['videos'] = [i.video for i in instance.movievideo_set.all()]
         rep['genre'] = [i.title for i in instance.genre.all()]
 
-
         return rep
 
     @classmethod

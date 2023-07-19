@@ -2,7 +2,8 @@ from django.urls import path
 from users.views import (
     UserTokenObtainPairView, UserTokenRefreshView, UserTokenVerifyView,
     RegisterUserCreateAPIView, ActivationUserGenericAPIView, PasswordResetGenericAPIView,
-    PasswordResetConfirmUpdateAPIView, UserListAPIView, WishlistCreateAPIView, WishlistListAPIView,
+    PasswordResetConfirmUpdateAPIView, UserListAPIView, WishlistCreateAPIView, WishlistListAPIView, UserCreate,
+    UserUpdate, UserDelete
 )
 app_name='user'
 urlpatterns = [
@@ -15,5 +16,14 @@ urlpatterns = [
     path('activate-user/', ActivationUserGenericAPIView.as_view(), name='activated_account'),
     path('reset-password/', PasswordResetGenericAPIView.as_view(), name='reset_password'),
     path('reset-password-confirm/', PasswordResetConfirmUpdateAPIView.as_view(), name='reset_password_confirm'),
+
+
     path('list/', UserListAPIView.as_view(), name='users_list'),
+    path('user/update/<int:pk>/', UserCreate.as_view(), name='users_update'),
+    path('user/delete/<int:pk>/', UserDelete.as_view(), name='users_delete'),
+    path('user/detail/<int:pk>/', UserDelete.as_view(), name='users_detail'),
+    path('user/create/', UserCreate.as_view(), name='users_create'),
+
+
+
 ]
