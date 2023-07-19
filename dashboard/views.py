@@ -81,22 +81,6 @@ class MovieDelete(DestroyAPIView):
     lookup_field = 'slug'
 
 
-# Users ----------------------------------------------------------------------------------------
-
-class UserList(ListAPIView):
-    # permission_classes = [AdminOrModerator]
-    queryset = User.objects.all()
-    serializer_class = UserListSerializer
-    parser_classes = FormParser, MultiPartParser
-    pagination_class = StandardResultsSetPagination
-
-
-class UserDelete(DestroyAPIView):
-    # permission_classes = [AdminOrModerator]
-    serializer_class = UserCreateUpdateDeleteSerializer
-    queryset = User.objects.all()
-
-
 # Comments --------------------------------------------------------------------------------------
 
 class CommentList(ListAPIView):

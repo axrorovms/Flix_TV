@@ -1,11 +1,16 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from users.views import (
     UserTokenObtainPairView, UserTokenRefreshView, UserTokenVerifyView,
     RegisterUserCreateAPIView, ActivationUserGenericAPIView, PasswordResetGenericAPIView,
-    PasswordResetConfirmUpdateAPIView, UserListAPIView, WishlistCreateAPIView, WishlistListAPIView, UserCreate,
-    UserUpdate, UserDelete
+    PasswordResetConfirmUpdateAPIView, WishlistCreateAPIView, WishlistListAPIView, UserModelViewSet
 )
-app_name='user'
+app_name = 'user'
+
+router = DefaultRouter()
+router.register('user', UserModelViewSet)
+
+
 urlpatterns = [
     path('add-wishlist', WishlistCreateAPIView.as_view(), name="add-wishlist"),
     path('wishlist-list', WishlistListAPIView.as_view(), name="list-wishlist"),
@@ -17,13 +22,5 @@ urlpatterns = [
     path('reset-password/', PasswordResetGenericAPIView.as_view(), name='reset_password'),
     path('reset-password-confirm/', PasswordResetConfirmUpdateAPIView.as_view(), name='reset_password_confirm'),
 
-
-    path('list/', UserListAPIView.as_view(), name='users_list'),
-    path('user/update/<int:pk>/', UserCreate.as_view(), name='users_update'),
-    path('user/delete/<int:pk>/', UserDelete.as_view(), name='users_delete'),
-    path('user/detail/<int:pk>/', UserDelete.as_view(), name='users_detail'),
-    path('user/create/', UserCreate.as_view(), name='users_create'),
-
-
-
+    path('', include(router.urls))
 ]
