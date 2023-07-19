@@ -81,3 +81,4 @@ class BaseAbstractUser(AbstractBaseUser, PermissionsMixin):
         """
         full_name = "%s %s" % (self.first_name, self.last_name)
         return full_name.strip()
+

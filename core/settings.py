@@ -132,30 +132,30 @@ ELASTICSEARCH_DSL = {
 
 # Cache
 
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://10.10.5.175:6379",
-    }
-}
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django.core.cache.backends.redis.RedisCache",
+#         "LOCATION": "redis://10.10.5.175:6379",
+#     }
+# }
 
 
 # Minio
 # django-storages settings
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
-STATICFILES_STORAGE = 'core.custom_storages.StaticStorage'
-STATICFILES_LOCATION = 'static'
-
-DATA_UPLOAD_MAX_MEMORY_SIZE = 1048576000
-AWS_ACCESS_KEY_ID = os.getenv('MINIO_ACCESS_KEY')
-AWS_SECRET_ACCESS_KEY = os.getenv('MINIO_SECRET_KEY')
-AWS_STORAGE_BUCKET_NAME = os.getenv('MINIO_BUCKET_NAME')
-AWS_S3_ENDPOINT_URL = os.getenv('MINIO_ENDPOINT')
-
-
-AWS_QUERYSTRING_AUTH = True
-AWS_QUERYSTRING_EXPIRE = 15
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+#
+# STATICFILES_STORAGE = 'core.custom_storages.StaticStorage'
+# STATICFILES_LOCATION = 'static'
+#
+# DATA_UPLOAD_MAX_MEMORY_SIZE = 1048576000
+# AWS_ACCESS_KEY_ID = os.getenv('MINIO_ACCESS_KEY')
+# AWS_SECRET_ACCESS_KEY = os.getenv('MINIO_SECRET_KEY')
+# AWS_STORAGE_BUCKET_NAME = os.getenv('MINIO_BUCKET_NAME')
+# AWS_S3_ENDPOINT_URL = os.getenv('MINIO_ENDPOINT')
+#
+#
+# AWS_QUERYSTRING_AUTH = True
+# AWS_QUERYSTRING_EXPIRE = 15
 
 
 # SMTP settings
