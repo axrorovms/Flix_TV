@@ -3,12 +3,10 @@ from rest_framework.routers import DefaultRouter
 from users.views import (
     UserTokenObtainPairView, UserTokenRefreshView, UserTokenVerifyView,
     RegisterUserCreateAPIView, ActivationUserGenericAPIView, PasswordResetGenericAPIView,
-    PasswordResetConfirmUpdateAPIView, WishlistCreateAPIView, WishlistListAPIView, UserModelViewSet
+    PasswordResetConfirmUpdateAPIView, WishlistCreateAPIView, WishlistListAPIView
 )
 app_name = 'user'
 
-router = DefaultRouter()
-router.register('user', UserModelViewSet)
 
 
 urlpatterns = [
@@ -22,5 +20,4 @@ urlpatterns = [
     path('reset-password/', PasswordResetGenericAPIView.as_view(), name='reset_password'),
     path('reset-password-confirm/', PasswordResetConfirmUpdateAPIView.as_view(), name='reset_password_confirm'),
 
-    path('', include(router.urls))
 ]
