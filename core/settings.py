@@ -132,12 +132,12 @@ ELASTICSEARCH_DSL = {
 
 # Cache
 
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-#         "LOCATION": "redis://10.10.5.175:6379",
-#     }
-# }
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://10.10.5.175:6379",
+    }
+}
 
 
 # Minio

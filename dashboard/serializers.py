@@ -78,4 +78,4 @@ class TopMoviesSerializer(ModelSerializer):
 class LatestMoviesSerializer(ModelSerializer):
     class Meta:
         model = Movie
-        fields = ('id', 'title', 'type', 'status')
+        fields = ('id', 'title', 'type', 'is_premium')
