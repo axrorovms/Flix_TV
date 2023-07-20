@@ -8,7 +8,7 @@ import shared.pagination
 from elastic_search.serializers import MovieDocumentSerializer
 from elastic_search.documents import MovieDocument
 from movie.models import Movie
-from dashboard.pagination import StandardResultsSetPagination
+from shared.pagination import StandardResultsSetPagination
 
 
 class MovieDocumentViewSet(DocumentViewSet):

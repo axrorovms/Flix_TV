@@ -1,22 +1,16 @@
-from django.contrib.auth.hashers import make_password
-from rest_framework import status
+from users.serializers.serializers import PasswordResetConfirmSerializer, UserModelSerializer, UserListSerializer
+from users.serializers import RegisterUserModelSerializer, CheckActivationSerializer, SendEmailResetSerializer
+from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
+from users.serializers.wishlist import WishlistCreateModelSerializer, WishlistListModelSerializer
 from rest_framework.parsers import FormParser, MultiPartParser
+from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
-from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, DestroyAPIView, UpdateAPIView, \
-    RetrieveAPIView, RetrieveUpdateDestroyAPIView
-
-from users.models import User
-from users.serializers import RegisterUserModelSerializer, CheckActivationSerializer, SendEmailResetSerializer
-from users.serializers.serializers import PasswordResetConfirmSerializer, UserModelSerializer, UserListSerializer
-
+from rest_framework import status
 from users.models import Wishlist
-from users.serializers.wishlist import WishlistCreateModelSerializer, WishlistListModelSerializer
+from users.models import User
 
-
-# Create your views here.
 
 class UserTokenObtainPairView(TokenObtainPairView):
     parser_classes = (FormParser, MultiPartParser)

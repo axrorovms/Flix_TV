@@ -7,32 +7,36 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ('id', 'movie', 'author', 'text', 'created_at')
         read_only_fields = ('id', 'created_at')
-        required_fields = ('id',)
-
-
-class RecursiveField(serializers.Serializer):
-    def to_representation(self, value):
-        serializer = self.parent.parent.__class__(value, context=self.context)
-        return serializer.data
 
 
 class ChildSerializer(serializers.ModelSerializer):
-    children = RecursiveField(many=True)
+    children = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
-        fields = ('id', 'author', 'text', 'children', 'movie_id')
+        fields = ('id', 'author', 'text', 'children')
+
+    def get_children(self, comment):
+        if self.context.get('show_children'):
+            children = Comment.objects.filter(parent=comment)
+            serializer = CommentSerializer(children, many=True, read_only=True)
+            return serializer.data
+        return []
+
+    def to_representation(self, instance: Comment):
+        rep = super().to_representation(instance)
+        rep['likes'] = instance.like_set.all().values('like').count()
+        rep['dislikes'] = instance.dislike_set.all().values('dislike').count()
+        return rep
 
 
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
-        fields = ('id', 'comment', 'like', 'user')
-        read_only_fields = ('id',)
+        fields = ('comment',)
 
 
 class DisLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DisLike
-        fields = ('id', 'comment', 'dislike', 'user')
-        read_only_fields = ('id',)
+        fields = ('comment',)

@@ -7,13 +7,10 @@ from users.views import (
 )
 app_name = 'user'
 
-# router = DefaultRouter()
-# router.register('', UserView)
-
 
 urlpatterns = [
-    path('add-wishlist', WishlistCreateAPIView.as_view(), name="add-wishlist"),
-    path('wishlist-list', WishlistListAPIView.as_view(), name="list-wishlist"),
+    path('add-wishlist', WishlistCreateAPIView.as_view(), name="add_wishlist"),
+    path('wishlist', WishlistListAPIView.as_view(), name="wishlist"),
     path('token/create/', UserTokenObtainPairView.as_view(), name='token_create'),
     path('token/refresh/', UserTokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify/', UserTokenVerifyView.as_view(), name='token_verify'),
@@ -23,6 +20,6 @@ urlpatterns = [
     path('reset-password-confirm/', PasswordResetConfirmUpdateAPIView.as_view(), name='reset_password_confirm'),
 
     path('<int:pk>', UserView.as_view()),
-    path('list/', UserList.as_view())
+    path('', UserList.as_view())
 
 ]
