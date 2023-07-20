@@ -2,7 +2,7 @@ from datetime import datetime
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework.generics import (CreateAPIView, ListAPIView, UpdateAPIView, DestroyAPIView)
+from rest_framework.generics import (CreateAPIView, ListAPIView, UpdateAPIView, DestroyAPIView, ListCreateAPIView)
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -34,7 +34,7 @@ videos_params = openapi.Parameter(
 
 # Movies -------------------------------------------------------------------------------------
 
-class MovieList(ListAPIView):
+class MovieList(ListCreateAPIView):
     # permission_classes = [AdminOrModerator]
     queryset = Movie.objects.all()
     serializer_class = MovieListSerializer
@@ -47,6 +47,9 @@ class MovieCreate(CreateAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieCreateDeleteSerializer
     parser_classes = (MultiPartParser, FormParser)
+
+    # def create(self, request, *args, **kwargs):
+    #     return super().create(request, *args, **kwargs)
 
     @swagger_auto_schema(manual_parameters=[videos_params])
     def post(self, request, *args, **kwargs):
@@ -67,14 +70,15 @@ class MovieUpdate(UpdateAPIView):
     serializer_class = MovieCreateDeleteSerializer
     parser_classes = FormParser, MultiPartParser
     lookup_field = 'slug'
-
-    def get_queryset(self):
-        return Movie.objects.filter(slug=self.kwargs.get('slug'))
-
+    lookup_url_kwarg = 'slug'
+    #
+    # def get_queryset(self):
+    #     return Movie.objects.filter(slug=self.kwargs.get('slug'))
+    #
 
 class MovieDelete(DestroyAPIView):
     # permission_classes = [AdminOrModerator]
-    serializer_class = MovieCreateDeleteSerializer
+    # serializer_class = MovieCreateDeleteSerializer
     queryset = Movie.objects.all()
     lookup_field = 'slug'
 
@@ -86,7 +90,6 @@ class CommentList(ListAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentListSerializer
     parser_classes = FormParser, MultiPartParser
-    pagination_class = StandardResultsSetPagination
 
 
 class CommentDelete(DestroyAPIView):

@@ -36,3 +36,21 @@ urlpatterns = [
     path('main/', DashboardAPIView.as_view(), name='dashboard'),
 
 ]
+
+#
+# RestApi
+#
+# RestFullApi
+#
+# path('movies/list/', MovieList.as_view(), name='movie_list'),
+# path('movies/create/', MovieCreate.as_view(), name='movie_create'),
+# path('movies/update/<slug:slug>/', MovieUpdate.as_view(), name='movie_update'),
+# path('movies/delete/<slug:slug>/', MovieDelete.as_view(), name='movie_delete'),
+#
+#
+#
+# path('movies', MovieListCreateApiView.as_view(), name='movie_create_list'), (create, list)
+# path('movies/<slug:slug>/', MovieDelete.as_view(), name='movie_delete'),
+
+
+# api design
