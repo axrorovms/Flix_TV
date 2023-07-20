@@ -6,7 +6,8 @@ from dashboard.views import (
     CommentDelete,
     ReviewList,
     ReviewDelete,
-    DashboardAPIView
+    DashboardAPIView,
+    GenreCreateAPIView,
 )
 
 app_name = 'dashboard'
@@ -19,15 +20,18 @@ urlpatterns = [
 
 
     # Comments ------------------------------------------------------------------------------
-    path('comments/', CommentList.as_view(), name='comment_list'),
-    path('comments/<int:pk>/', CommentDelete.as_view(), name='comment_delete'),
+    path('comments', CommentList.as_view(), name='comment_list'),
+    path('comments/<int:pk>', CommentDelete.as_view(), name='comment_delete'),
 
     # Reviews -------------------------------------------------------------------------------
-    path('reviews/', ReviewList.as_view(), name='review_list'),
-    path('reviews/<int:pk>/', ReviewDelete.as_view(), name='review_delete'),
+    path('reviews', ReviewList.as_view(), name='review_list'),
+    path('reviews/<int:pk>', ReviewDelete.as_view(), name='review_delete'),
 
     # Dashboards ----------------------------------------------------------------------------
     path('', DashboardAPIView.as_view(), name='dashboard'),
+
+
+    path('genre', GenreCreateAPIView.as_view(), name='genre'),
 
 ]
 

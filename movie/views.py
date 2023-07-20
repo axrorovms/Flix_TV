@@ -25,41 +25,13 @@ videos_params = openapi.Parameter(
 
 
 class MovieListAPIView(ListAPIView):
-    queryset = Movie.objects.filter(is_active=True)
+    queryset = Movie.active_movies.all()
     serializer_class = MovieListModelSerializer
+    pagination_class = StandardResultsSetPagination
+    search_fields = ('title', 'release_year', 'genre__title')
     filter_backends = (DjangoFilterBackend, SearchFilter)
     filterset_class = Moviefilter
-    search_fields = ('title', 'release_year', 'genre__title')
-    pagination_class = StandardResultsSetPagination
-
-
-class MoviePopularNewestAPIView(ListAPIView):  # +++
-    serializer_class = MovieListModelSerializer
-    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
-    filterset_fields = ('title',)  # Add any additional filtering fields here
-
-    def get_queryset(self):
-        queryset = Movie.objects.all()
-
-        sort_by = self.request.query_params.get('sort_by', None)
-        if sort_by == 'popular':
-            queryset = queryset.order_by('-views')
-        elif sort_by == 'newest':
-            queryset = queryset.order_by('-release_year')
-
-        return queryset
-
-
-# class MoviePopularListAPIView(ListAPIView):
-#     queryset = Movie.objects.order_by('-views')
-#     serializer_class = MovieListModelSerializer
-#     filter_backends = (DjangoFilterBackend, SearchFilter)
-#
-#
-# class MovieListAPIView(ListAPIView):
-#     queryset = Movie.objects.order_by('-release_year')
-#     serializer_class = MovieListModelSerializer
-#     filter_backends = (DjangoFilterBackend, SearchFilter)
+    ordering_fields = ['views', 'release_year']
 
 
 class MovieDetailAPIView(RetrieveAPIView):
@@ -73,7 +45,7 @@ class MovieDetailAPIView(RetrieveAPIView):
 
 
 class MoviePremiumListAPIView(ListAPIView):
-    queryset = Movie.objects.filter(status='Premium')
+    queryset = Movie.active_movies.all()
     serializer_class = MovieListModelSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter)
     filterset_class = Moviefilter

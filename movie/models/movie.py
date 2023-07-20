@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.core.validators import FileExtensionValidator
 from django.db.models import Count, Sum
@@ -10,15 +10,16 @@ from movie.models import Genre
 from users.models import User
 
 
+class ActivationManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_active=True).all()
+
+
 class Movie(BaseModel):
     class TypeChoice(models.TextChoices):
-        movie = "Movie", "movie"
-        live = "Live", "live"
-        series = "Series", "series"
-
-    class StatusChoice(models.TextChoices):
-        free = "Free", "free"
-        premium = "Premium", "premium"
+        movie = "movie", "Movie"
+        live = "live", "Live"
+        series = "series", "Series"
 
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -30,7 +31,7 @@ class Movie(BaseModel):
     photo = models.ImageField(upload_to=upload_name, null=True, blank=True)
     type = models.CharField(max_length=255, choices=TypeChoice.choices, default=TypeChoice.movie)
     video_url = models.URLField(null=True, blank=True)
-    status = models.CharField(max_length=255, choices=StatusChoice.choices, default=StatusChoice.free)
+    is_premium = models.BooleanField(default=False)
     views = models.BigIntegerField(default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=False)
@@ -45,6 +46,10 @@ class Movie(BaseModel):
     @property
     def comments(self):
         return self.comment_set.all()
+
+    # @property
+    # def genre(self):
+    #     return self.genre.values_list('title', flat=True)
 
     @property
     def reviews(self):
@@ -64,6 +69,9 @@ class Movie(BaseModel):
     def get_view_sum():
         movies = Movie.objects.filter(created_at__month=datetime.now().month)
         return movies.aggregate(total_views=Sum('views'))['total_views'] or 0
+
+    objects = models.Manager()
+    active_movies = ActivationManager()
 
 
 class MovieVideo(models.Model):

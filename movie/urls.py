@@ -1,17 +1,16 @@
-from django.urls import path, include
-
+from django.urls import path
 from movie import views
 
 app_name = 'movie'
+
 
 urlpatterns = [
 
     # Movie
     path('', views.MovieListAPIView.as_view(), name='movie_list'),
-    path('premium', views.MoviePremiumListAPIView.as_view(), name='movie_premium_list'),
-    path('sortby', views.MoviePopularNewestAPIView.as_view(), name='movie_popular_newest_list'),
+    # path('premium', views.MoviePremiumListAPIView.as_view(), name='movie_premium_list'),
     path('similar/<slug:slug>', views.SimilarMovieListAPIView.as_view(), name='movie_similar'),
-    path('<slug:slug>', views.MovieDetailAPIView.as_view(), name='movie_detail'),
+    path('detail/<slug:slug>', views.MovieDetailAPIView.as_view(), name='movie_detail'),
 
     # Catalog
     path('catalog', views.GenreListAPIView.as_view(), name='catalog_list'),
@@ -24,6 +23,6 @@ urlpatterns = [
     path('comments/<int:id>', views.CommentListCreateAPIView.as_view(), name='comments'),
     path('comment-children', views.ParentListAPIView.as_view(), name='children_list'),
     path('comment_replay/<int:id>', views.CommentReplyListCreateAPIView.as_view(), name='comments_replay'),
-    path('comment_likes', views.CommentLikeView.as_view(), name='comments_likes'),
-    path('comment_dislikes', views.CommentDislikeView.as_view(), name='comments_dislikes'),
+    path('comment/likes', views.CommentLikeView.as_view(), name='comments_likes'),
+    path('comment/dislikes', views.CommentDislikeView.as_view(), name='comments_dislikes'),
 ]
