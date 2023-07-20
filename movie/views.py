@@ -1,4 +1,6 @@
 from rest_framework.generics import (ListAPIView, CreateAPIView, RetrieveAPIView, ListCreateAPIView)
+from rest_framework.views import APIView
+
 from movie.models import Movie, Genre, Review, Comment, DisLike, Like
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -24,17 +26,30 @@ videos_params = openapi.Parameter(
 # Movie ----------------------------------------------------------------------------------------------
 
 
-class MovieListAPIView(ListAPIView):
-    queryset = Movie.active_movies.all()
-    serializer_class = MovieListModelSerializer
-    pagination_class = StandardResultsSetPagination
-    search_fields = ('title', 'release_year', 'genre__title')
-    filter_backends = (DjangoFilterBackend, SearchFilter)
-    filterset_class = Moviefilter
-    ordering_fields = ['views', 'release_year']
+class MovieListAPIView(APIView):
+    def get(self, request):
+        queryset = Movie.objects.filter(is_active=True)
+        filter_backend = DjangoFilterBackend()
+        search_backend = SearchFilter()
+        queryset = filter_backend.filter_queryset(request, queryset, view=self)
+        queryset = search_backend.filter_queryset(request, queryset, view=self)
+        pagination_class = StandardResultsSetPagination()
+        page = pagination_class.paginate_queryset(queryset, request, view=self)
+        if page is not None:
+            serializer = MovieListModelSerializer(page, many=True)
+            for movie_data in serializer.data:
+                movie = Movie.objects.get(pk=movie_data['id'])
+                movie_data['rating'] = movie.get_rating(movie)
+                movie_data['genre'] = movie.get_genre_list(movie)
+                movie_data['videos'] = movie.get_videos(movie)
+            return pagination_class.get_paginated_response(serializer.data)
+
+        serializer = MovieListModelSerializer(queryset, many=True)
+        serializer.data['rating'] = Movie.get_rating
+        return Response(serializer.data)
 
 
-class MovieDetailAPIView(RetrieveAPIView):
+class MovieDetailAPIView(APIView):
     queryset = Movie.objects.all()
     serializer_class = MovieDetailModelSerializer
 

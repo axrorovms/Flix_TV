@@ -12,7 +12,7 @@ class VideoSerializerModelSerializer(serializers.ModelSerializer):
 class MovieListModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ('title', 'release_year', 'is_premium', 'photo', 'banner')
+        fields = ('id', 'title', 'release_year', 'is_premium', 'photo', 'banner')
 
     @classmethod
     def get_similar_movies(cls, slug):
@@ -26,15 +26,6 @@ class MovieListModelSerializer(serializers.ModelSerializer):
         except Movie.DoesNotExist:
             return Movie.objects.none()
 
-    def to_representation(self, instance: Movie):
-        rep = super().to_representation(instance)
-        if not instance.review_set.all():
-            rep['rating'] = float(0.0)
-        else:
-            rep['rating'] = f'{sum([i.rating for i in instance.review_set.all()]) / instance.review_set.all().count():.1f}'
-        rep['videos'] = [i.video for i in instance.movievideo_set.all()]
-        rep['genre'] = [i.title for i in instance.genre.all()]
-        return rep
 
 
 class MovieDetailModelSerializer(serializers.ModelSerializer):
@@ -42,16 +33,7 @@ class MovieDetailModelSerializer(serializers.ModelSerializer):
         model = Movie
         fields = ('title', 'release_year', 'is_premium', 'photo', 'banner')
 
-    def to_representation(self, instance: Movie):
-        rep = super().to_representation(instance)
-        if not instance.review_set.all():
-            rep['rating'] = 0.0
-        else:
-            rep['rating'] = f'{sum([i.rating for i in instance.review_set.all()]) / instance.review_set.all().count():.1f}'
-        rep['videos'] = [i.video for i in instance.movievideo_set.all()]
-        rep['genre'] = [i.title for i in instance.genre.all()]
 
-        return rep
 
     @staticmethod
     def get_suitable_movies(user_id, slug):

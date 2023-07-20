@@ -70,6 +70,21 @@ class Movie(BaseModel):
         movies = Movie.objects.filter(created_at__month=datetime.now().month)
         return movies.aggregate(total_views=Sum('views'))['total_views'] or 0
 
+    @classmethod
+    def get_videos(cls, movie):
+        return [video.video for video in movie.movievideo_set.all()]
+
+    @classmethod
+    def get_genre_list(cls, movie):
+        return [genre.title for genre in movie.genre.all()]
+
+    @classmethod
+    def get_rating(cls, movie):
+        if not movie.review_set.all():
+            return 0.00
+        else:
+            return round(sum([review.rating for review in movie.review_set.all()]) / movie.review_set.count(), 2)
+
     objects = models.Manager()
     active_movies = ActivationManager()
 
