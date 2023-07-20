@@ -9,15 +9,6 @@ class VideoSerializerModelSerializer(serializers.ModelSerializer):
         fields = ('video', )
 
 
-class MovieCreateModelSerializer(serializers.ModelSerializer):
-    video = VideoSerializerModelSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Movie
-        fields = ('title', 'slug', 'user', 'genre', 'video')
-
-
-
 class MovieListModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie

@@ -29,13 +29,11 @@ class ChildSerializer(serializers.ModelSerializer):
         rep['dislikes'] = instance.dislike_set.all().values('dislike').count()
         return rep
 
+
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
         fields = ('comment',)
-
-
-
 
 
 class DisLikeSerializer(serializers.ModelSerializer):
