@@ -135,7 +135,7 @@ ELASTICSEARCH_DSL = {
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://10.10.5.175:6379",
+        "LOCATION": "redis://127.0.0.1:6379",
     }
 }
 
