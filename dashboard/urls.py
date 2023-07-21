@@ -23,6 +23,7 @@ urlpatterns = [
     path('comments', CommentList.as_view(), name='comment_list'),
     path('comments/<int:pk>', CommentDelete.as_view(), name='comment_delete'),
 
+
     # Reviews -------------------------------------------------------------------------------
     path('reviews', ReviewList.as_view(), name='review_list'),
     path('reviews/<int:pk>', ReviewDelete.as_view(), name='review_delete'),
