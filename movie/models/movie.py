@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from django.core.validators import FileExtensionValidator
 from django.db.models import Count, Sum
@@ -17,9 +17,9 @@ class ActivationManager(models.Manager):
 
 class Movie(BaseModel):
     class TypeChoice(models.TextChoices):
-        movie = "movie", "Movie"
-        live = "live", "Live"
-        series = "series", "Series"
+        movie = "movie", "movie"
+        live = "live", "live"
+        series = "series", "series"
 
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -47,23 +47,29 @@ class Movie(BaseModel):
     def comments(self):
         return self.comment_set.all()
 
-    # @property
-    # def genre(self):
-    #     return self.genre.values_list('title', flat=True)
-
     @property
     def reviews(self):
         return self.review_set.all()
 
-    @staticmethod
-    def count_reviews(movies):
-        return movies.annotate(num_reviews=Count('review')).aggregate(total_reviews=Sum('num_reviews'))[
-            'total_reviews'] or 0
+    # @staticmethod
+    # def count_reviews(movies):
+    #     return movies.annotate(num_reviews=Count('review')).aggregate(total_reviews=Sum('num_reviews'))[
+    #         'total_reviews'] or 0
 
     @staticmethod
-    def count_comments(movies):
-        return movies.annotate(num_comments=Count('comment')).aggregate(total_comments=Sum('num_comments'))[
-            'total_comments'] or 0
+    def count_reviews(movies): # +++
+        return movies.review_set.count()
+
+
+    # @staticmethod
+    # def count_comments(movies):
+    #     return movies.annotate(num_comments=Count('comment')).aggregate(total_comments=Sum('num_comments'))[
+    #         'total_comments'] or 0
+
+    @staticmethod
+    def count_comments(movies):  # +++
+        return movies.comment_set.count()
+
 
     @staticmethod
     def get_view_sum():
@@ -76,7 +82,7 @@ class Movie(BaseModel):
 
     @classmethod
     def get_genre_list(cls, movie):
-        return [genre.title for genre in movie.genre.all()]
+        return [genre.title for genre in movie.genre.values_list('title', flat=True)]
 
     @classmethod
     def get_rating(cls, movie):

@@ -1,6 +1,5 @@
 from datetime import datetime
 from rest_framework import status
-from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import (
@@ -31,7 +30,6 @@ class MovieListCreateApiView(ListCreateAPIView):
     # permission_classes = [AdminOrModerator]
     queryset = Movie.objects.all()
     serializer_class = MovieModelSerializer
-    parser_classes = [FormParser, MultiPartParser]
     pagination_class = StandardResultsSetPagination
 
     def create(self, request, *args, **kwargs):
@@ -41,8 +39,12 @@ class MovieListCreateApiView(ListCreateAPIView):
         self.perform_create(serializer)
         movie = serializer.instance
         movie.genre.set(serializer.validated_data['genre'])
-        for video in videos:
-            MovieVideo.objects.bulk_create(video=video, movie=movie)
+
+        movie_videos_to_create = [
+            MovieVideo(video=video, movie=movie) for video in videos
+        ]
+        MovieVideo.objects.bulk_create(movie_videos_to_create)
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -50,7 +52,6 @@ class MovieUpdateDelete(RetrieveUpdateDestroyAPIView):  # +++
     # permission_classes = [IsAdmin]
     queryset = Movie.objects.all()
     serializer_class = MovieModelSerializer
-    parser_classes = FormParser, MultiPartParser
     lookup_field = 'slug'
     lookup_url_kwarg = 'slug'
 
@@ -62,7 +63,6 @@ class CommentList(ListAPIView):
     # permission_classes = [AdminOrModerator]
     queryset = Comment.objects.all()
     serializer_class = CommentListSerializer
-    parser_classes = FormParser, MultiPartParser
 
 
 class CommentDelete(DestroyAPIView):
@@ -76,7 +76,6 @@ class ReviewList(ListAPIView):
     # permission_classes = [AdminOrModerator]
     queryset = Review.objects.all()
     serializer_class = ReviewListSerializer
-    parser_classes = FormParser, MultiPartParser
     pagination_class = StandardResultsSetPagination
 
 
@@ -89,7 +88,6 @@ class ReviewDelete(DestroyAPIView):
 
 class DashboardAPIView(APIView):
     # permission_classes = [AdminOrModerator]
-
     def get(self, request):
         movies_added = Movie.objects.filter(created_at__month=datetime.now().month)
         rep = {
@@ -102,7 +100,6 @@ class DashboardAPIView(APIView):
             'latest_users': LatestUsersSerializer(User.objects.order_by('-created_at')[:5], many=True).data,
             'latest_reviews': LatestReviewsSerializer(Review.objects.order_by('-created_at')[:5], many=True).data
         }
-
         return Response(rep)
 
 
@@ -112,4 +109,3 @@ class DashboardAPIView(APIView):
 class GenreCreateAPIView(CreateAPIView):
     queryset = Genre.objects.all()
     serializer_class = GenreCreateModelSerializer
-    parser_classes = (MultiPartParser, FormParser)

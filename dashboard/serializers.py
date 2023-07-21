@@ -59,6 +59,7 @@ class VideoSerializer(ModelSerializer):
 
 
 class TopMoviesSerializer(ModelSerializer):
+
     class Meta:
         model = Movie
         fields = ('id', 'title', 'type')
@@ -68,8 +69,7 @@ class TopMoviesSerializer(ModelSerializer):
         if not instance.reviews.all():
             rep['rating'] = 0.0
         else:
-            rep[
-                'rating'] = f'{sum([i.rating for i in instance.reviews.all()]) / instance.reviews.all().count():.1f}'
+            rep['rating'] = f'{sum([i.rating for i in instance.reviews.all()]) / instance.reviews.all().count():.1f}'
         rep['genre'] = [i.title for i in instance.genre.all()]
 
         return rep
