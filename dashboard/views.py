@@ -1,37 +1,28 @@
 from datetime import datetime
-
-from drf_yasg import openapi
 from rest_framework import status
-from rest_framework.generics import (ListAPIView, DestroyAPIView, ListCreateAPIView,
-                                     RetrieveUpdateDestroyAPIView, CreateAPIView)
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.generics import (
+    ListAPIView,
+    DestroyAPIView,
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+    CreateAPIView)
 
 from movie.models import Movie, Comment, Review, MovieVideo, Genre
 from movie.serializers import GenreCreateModelSerializer
-from shared import IsAdmin, AdminOrModerator
 from users.models import User
 from shared.pagination import StandardResultsSetPagination
 from dashboard.serializers import (
     CommentListSerializer,
-    CommentDeleteSerializer,
     ReviewListSerializer,
-    ReviewDeleteSerializer,
     TopMoviesSerializer,
     LatestMoviesSerializer,
     LatestUsersSerializer,
     LatestReviewsSerializer,
-
     MovieModelSerializer,
 )
-
-videos_params = openapi.Parameter(
-    'videos', openapi.IN_FORM,
-    description="test manual param",
-    type=openapi.TYPE_ARRAY,
-    items=openapi.Items(type=openapi.TYPE_FILE),
-    required=False)
 
 
 # Movies -------------------------------------------------------------------------------------
@@ -50,14 +41,12 @@ class MovieListCreateApiView(ListCreateAPIView):
         self.perform_create(serializer)
         movie = serializer.instance
         movie.genre.set(serializer.validated_data['genre'])
-
         for video in videos:
             MovieVideo.objects.bulk_create(video=video, movie=movie)
-
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class MovieUpdateDelete(RetrieveUpdateDestroyAPIView): # +++
+class MovieUpdateDelete(RetrieveUpdateDestroyAPIView):  # +++
     # permission_classes = [IsAdmin]
     queryset = Movie.objects.all()
     serializer_class = MovieModelSerializer
@@ -67,6 +56,7 @@ class MovieUpdateDelete(RetrieveUpdateDestroyAPIView): # +++
 
 
 # Comments --------------------------------------------------------------------------------------
+
 
 class CommentList(ListAPIView):
     # permission_classes = [AdminOrModerator]
@@ -78,7 +68,6 @@ class CommentList(ListAPIView):
 class CommentDelete(DestroyAPIView):
     # permission_classes = [AdminOrModerator]
     queryset = Comment.objects.all()
-    serializer_class = CommentDeleteSerializer
 
 
 # Reviews --------------------------------------------------------------------------------------
@@ -94,7 +83,6 @@ class ReviewList(ListAPIView):
 class ReviewDelete(DestroyAPIView):
     # permission_classes = [AdminOrModerator]
     queryset = Review.objects.all()
-    serializer_class = ReviewDeleteSerializer
 
 
 # Dashboard ------------------------------------------------------------------------------------
