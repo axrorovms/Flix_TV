@@ -93,17 +93,7 @@ class Movie(BaseModel):
         except Movie.DoesNotExist:
             return Movie.objects.none()
 
-    # @classmethod
-    # def get_suitable_movies(cls, user_id, slug):
-    #     user = dict(*User.objects.filter(id=user_id).values('subscription')).get('subscription')
-    #     movie_status = dict(*Movie.objects.filter(slug=slug).values('status'))
-    #     if user:
-    #         return Response(Movie.objects.get(slug=slug))
-    #     elif not user and movie_status.get('status') == Movie.StatusChoice.values[1]:
-    #         response_data = {"message": "fucking dude buy premium"}
-    #         return response_data
-    #     else:
-    #         return Response(Movie.objects.get(slug=slug))
+
 
 
 class MovieVideo(models.Model):

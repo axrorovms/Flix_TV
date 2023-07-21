@@ -13,19 +13,19 @@ class MovieCreateModelSerializer(serializers.ModelSerializer):
     video = VideoSerializerModelSerializer(many=True, read_only=True)
 
     class Meta:
-        model = 'movie.Movie'
+        model = Movie
         fields = ('title', 'slug', 'user', 'genre', 'video')
 
 
 class MovieListModelSerializer(serializers.ModelSerializer):
     class Meta:
-        model = 'movie.Movie'
+        model = Movie
         fields = ('title', 'release_year', 'status', 'photo', 'banner')
 
 
 class MovieDetailModelSerializer(serializers.ModelSerializer):
     class Meta:
-        model = 'movie.Movie'
+        model = Movie
         fields = ('title', 'release_year', 'status', 'photo', 'banner')
 
 
