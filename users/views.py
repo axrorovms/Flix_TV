@@ -1,6 +1,7 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, RetrieveUpdateDestroyAPIView, \
+    ListCreateAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -24,7 +25,8 @@ class UserTokenVerifyView(TokenVerifyView):
     parser_classes = (FormParser, MultiPartParser)
 
 
-class RegisterUserCreateAPIView(CreateAPIView):
+class UserListCreateAPIView(ListCreateAPIView):
+    queryset = User.objects.all()
     serializer_class = RegisterUserModelSerializer
     parser_classes = (FormParser, MultiPartParser)
     permission_classes = (AllowAny,)
@@ -71,18 +73,12 @@ class PasswordResetConfirmUpdateAPIView(GenericAPIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class UserList(ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserListSerializer
-    parser_classes = FormParser, MultiPartParser
-
-
-class UserView(RetrieveUpdateDestroyAPIView):
+class UserRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserModelSerializer
 
 
-class WishlistCreateAPIView(CreateAPIView):
+class WishlistListCreateAPIView(ListCreateAPIView):
     queryset = Wishlist.objects.all()
     serializer_class = WishlistCreateModelSerializer
 
@@ -93,8 +89,3 @@ class WishlistCreateAPIView(CreateAPIView):
             wishlist.delete()
             return Response({"message": "fucking deleted"})
         return Response({"message": "fucking added"}, status.HTTP_201_CREATED)
-
-
-class WishlistListAPIView(ListAPIView):
-    queryset = Wishlist.objects.all()
-    serializer_class = WishlistListModelSerializer

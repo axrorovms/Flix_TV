@@ -21,7 +21,12 @@ class RegisterUserModelSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        fields = tuple(User.REQUIRED_FIELDS) + ('username', 'password', 're_password')
+        fields = (
+            'id', 'image',
+            'first_name', 'last_name',
+            'email', 'username',
+            'subscription', 'status', 'created_at',
+            're_password', 'password')
 
     def check_password_macht(self, **kwargs):
         if kwargs.get("password") != kwargs.get("re_password"):

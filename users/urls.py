@@ -1,25 +1,30 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 from users.views import (
-    UserTokenObtainPairView, UserTokenRefreshView, UserTokenVerifyView,
-    RegisterUserCreateAPIView, ActivationUserGenericAPIView, PasswordResetGenericAPIView,
-    PasswordResetConfirmUpdateAPIView, WishlistCreateAPIView, WishlistListAPIView, UserView, UserList
+    UserTokenObtainPairView,
+    UserTokenRefreshView,
+    UserTokenVerifyView,
+    UserListCreateAPIView,
+    UserRetrieveUpdateDestroyAPIView,
+    ActivationUserGenericAPIView,
+    PasswordResetGenericAPIView,
+    PasswordResetConfirmUpdateAPIView,
+    WishlistListCreateAPIView,
+
 )
+
 app_name = 'user'
 
-
 urlpatterns = [
-    path('add-wishlist', WishlistCreateAPIView.as_view(), name="add_wishlist"),
-    path('wishlist', WishlistListAPIView.as_view(), name="wishlist"),
-    path('token/create/', UserTokenObtainPairView.as_view(), name='token_create'),
-    path('token/refresh/', UserTokenRefreshView.as_view(), name='token_refresh'),
-    path('token/verify/', UserTokenVerifyView.as_view(), name='token_verify'),
-    path('ragister/', RegisterUserCreateAPIView.as_view(), name='register'),
-    path('activate-user/', ActivationUserGenericAPIView.as_view(), name='activated_account'),
+    path('', UserListCreateAPIView.as_view(), name='users_list_create'),
+    path('activate/', ActivationUserGenericAPIView.as_view(), name='activated_account'),
     path('reset-password/', PasswordResetGenericAPIView.as_view(), name='reset_password'),
     path('reset-password-confirm/', PasswordResetConfirmUpdateAPIView.as_view(), name='reset_password_confirm'),
+    path('<int:pk>', UserRetrieveUpdateDestroyAPIView.as_view()),
 
-    path('<int:pk>', UserView.as_view()),
-    path('', UserList.as_view())
+    path('token/', UserTokenObtainPairView.as_view(), name='token_create'),
+    path('token/refresh/', UserTokenRefreshView.as_view(), name='token_refresh'),
+    path('token/verify/', UserTokenVerifyView.as_view(), name='token_verify'),
+
+    path('wishlist', WishlistListCreateAPIView.as_view(), name="wishlist_list_create"),
 
 ]
