@@ -4,6 +4,7 @@ from django.core.validators import FileExtensionValidator
 from django.db.models import Count, Sum
 from django_countries.fields import CountryField
 from django.db import models
+from rest_framework.response import Response
 
 from shared.models import BaseModel, upload_name
 from movie.models import Genre
@@ -64,6 +65,45 @@ class Movie(BaseModel):
     def get_view_sum():
         movies = Movie.objects.filter(created_at__month=datetime.now().month)
         return movies.aggregate(total_views=Sum('views'))['total_views'] or 0
+
+    @classmethod
+    def get_rating(cls, movie):
+        if not movie.review_set.all():
+            return 0.00
+        else:
+            return round(sum([review.rating for review in movie.review_set.all()]) / movie.review_set.count(), 2)
+
+    @classmethod
+    def get_videos(cls, movie):
+        return [video.video for video in movie.movievideo_set.all()]
+
+    @classmethod
+    def get_genre_list(cls, movie):
+        return [genre.title for genre in movie.genre.all()]
+
+    @classmethod
+    def get_similar_movies(cls, slug):
+        try:
+            movie = Movie.objects.get(slug=slug)
+            movie_genres = movie.genre.all()
+            similar_movies = Movie.objects.filter(genre__in=movie_genres).exclude(slug=slug).distinct()
+
+            return similar_movies
+
+        except Movie.DoesNotExist:
+            return Movie.objects.none()
+
+    # @classmethod
+    # def get_suitable_movies(cls, user_id, slug):
+    #     user = dict(*User.objects.filter(id=user_id).values('subscription')).get('subscription')
+    #     movie_status = dict(*Movie.objects.filter(slug=slug).values('status'))
+    #     if user:
+    #         return Response(Movie.objects.get(slug=slug))
+    #     elif not user and movie_status.get('status') == Movie.StatusChoice.values[1]:
+    #         response_data = {"message": "fucking dude buy premium"}
+    #         return response_data
+    #     else:
+    #         return Response(Movie.objects.get(slug=slug))
 
 
 class MovieVideo(models.Model):

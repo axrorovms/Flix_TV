@@ -6,7 +6,6 @@ from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView, RetrieveAPIView
 
 from movie.models import Movie, Genre, MovieVideo, Review, Comment, DisLike, Like
@@ -21,12 +20,6 @@ videos_params = openapi.Parameter(
     type=openapi.TYPE_ARRAY,
     items=openapi.Items(type=openapi.TYPE_FILE),
     required=False)
-
-
-class MovieListPagination(PageNumberPagination):
-    page_size = 10
-    page_size_query_param = 'page_size'
-    max_page_size = 100
 
 
 class MovieCreateAPIView(CreateAPIView):
@@ -54,7 +47,24 @@ class MovieListAPIView(ListAPIView):
     filter_backends = (DjangoFilterBackend, SearchFilter)
     filterset_class = Moviefilter
     search_fields = ('title', 'release_year', 'genre__title')
-    pagination_class = MovieListPagination
+
+    def get(self, request, *args, **kwargs):
+        movies = self.get_queryset()
+        data = []
+        for movie in movies:
+            movie_data = {
+                'id': movie.id,
+                'title': movie.title,
+                'status': movie.status,
+                'description': movie.description,
+                'release_year': movie.release_year,
+                'genre_list': Movie.get_genre_list(movie),
+                'videos': Movie.get_videos(movie),
+                'rating': Movie.get_rating(movie),
+            }
+            data.append(movie_data)
+
+        return Response(data)
 
 
 class MoviePremiumListAPIView(ListAPIView):
@@ -99,6 +109,19 @@ class GenreListAPIView(ListAPIView):
     serializer_class = GenreListModelSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter)
 
+    def get(self, request, *args, **kwargs):
+        genres = self.get_queryset()
+        data = []
+        for genre in genres:
+            movie_data = {
+                'title': genre.title,
+                'image': genre.image,
+                'count_movies': Genre.with_movies_count(genre)
+            }
+            data.append(movie_data)
+
+        return Response(data)
+
 
 class SimilarMovieListAPIView(ListAPIView):
     queryset = Movie.objects.all()
@@ -106,7 +129,7 @@ class SimilarMovieListAPIView(ListAPIView):
 
     def get_queryset(self):
         slug = self.kwargs['slug']
-        return MovieListModelSerializer.get_similar_movies(slug)
+        return Movie.get_similar_movies(slug)
 
 
 class MovieDetailAPIView(RetrieveAPIView):
@@ -114,6 +137,7 @@ class MovieDetailAPIView(RetrieveAPIView):
     serializer_class = MovieDetailModelSerializer
 
     def get(self, request, *args, **kwargs):
+        movie = self.get_queryset()
         user_id = request.user.id
         slug = self.kwargs['slug']
         return Response(MovieDetailModelSerializer.get_suitable_movies(user_id, slug))
@@ -130,7 +154,7 @@ class ReviewListAPIView(ListAPIView):
 
     def get_queryset(self):
         slug = self.kwargs['slug']
-        return ReviewListModelSerializer.get_review(slug)
+        return Review.get_review(slug)
 
 
 class CreateCommentAPIView(CreateAPIView):
