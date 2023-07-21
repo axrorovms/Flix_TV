@@ -1,8 +1,8 @@
 from django.urls import path
+from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
+
 from users.views import (
-    UserTokenObtainPairView,
-    UserTokenRefreshView,
-    UserTokenVerifyView,
     UserListCreateAPIView,
     UserRetrieveUpdateDestroyAPIView,
     ActivationUserGenericAPIView,
@@ -21,9 +21,9 @@ urlpatterns = [
     path('reset-password-confirm/', PasswordResetConfirmUpdateAPIView.as_view(), name='reset_password_confirm'),
     path('<int:pk>', UserRetrieveUpdateDestroyAPIView.as_view()),
 
-    path('token/', UserTokenObtainPairView.as_view(), name='token_create'),
-    path('token/refresh/', UserTokenRefreshView.as_view(), name='token_refresh'),
-    path('token/verify/', UserTokenVerifyView.as_view(), name='token_verify'),
+    path('token/', TokenObtainPairView.as_view(parser_classes = (FormParser, MultiPartParser)), name='token_create'),
+    path('token/refresh/', TokenRefreshView.as_view(parser_classes = (FormParser, MultiPartParser)), name='token_refresh'),
+    path('token/verify/', TokenVerifyView.as_view(parser_classes = (FormParser, MultiPartParser)), name='token_verify'),
 
     path('wishlist', WishlistListCreateAPIView.as_view(), name="wishlist_list_create"),
 
