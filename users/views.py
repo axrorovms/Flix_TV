@@ -75,10 +75,10 @@ class WishlistListCreateAPIView(ListCreateAPIView):
     serializer_class = WishlistModelSerializer
     parser_classes = (FormParser, MultiPartParser)
 
-    def post(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         wishlist, created = Wishlist.objects.get_or_create(movie_id=request.data.get('movie'),
                                                            user_id=request.data.get('user'))
         if not created:
             wishlist.delete()
             return Response({"message": "fucking deleted"})
-        return Response({"message": "fucking added"}, status.HTTP_201_CREATED)
+        return Response({"message": "fucking added"}, status=status.HTTP_201_CREATED)
