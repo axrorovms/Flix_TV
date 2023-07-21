@@ -15,7 +15,7 @@ User = get_user_model()
 error_messages = Messages()
 
 
-class RegisterUserModelSerializer(ModelSerializer):
+class UserModelSerializer(ModelSerializer):
     re_password = serializers.CharField(max_length=100, write_only=True)
     password = serializers.CharField(max_length=100, write_only=True)
 
@@ -27,6 +27,12 @@ class RegisterUserModelSerializer(ModelSerializer):
             'email', 'username',
             'subscription', 'status', 'created_at',
             're_password', 'password')
+
+    def to_representation(self, instance: User):
+        rep = super().to_representation(instance)
+        rep['comment'] = CommentListSerializer(instance.comments, many=True).data
+        rep['review'] = ReviewListSerializer(instance.reviews, many=True).data
+        return rep
 
     def check_password_macht(self, **kwargs):
         if kwargs.get("password") != kwargs.get("re_password"):
@@ -91,24 +97,3 @@ class SendEmailResetSerializer(serializers.Serializer):
         self.context['user'] = user
         ActivationEmail(self.context.get('request'), self.context).send([user.email])
         return attrs
-
-
-# User Serializers ----------------------------------------------------------------------------------------------
-
-
-class UserListSerializer(ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('id', 'image', 'first_name', 'last_name', 'email', 'username', 'subscription', 'status', 'created_at')
-
-    def to_representation(self, instance: User):
-        rep = super().to_representation(instance)
-        rep['comment'] = CommentListSerializer(instance.comments, many=True).data
-        rep['review'] = ReviewListSerializer(instance.reviews, many=True).data
-        return rep
-
-
-class UserModelSerializer(ModelSerializer):
-    class Meta:
-        model = User
-        fields = '__all__'
