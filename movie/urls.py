@@ -1,8 +1,10 @@
-from django.urls import path, include
-
+from django.urls import path
 from movie import views
+from movie.views import CreateCommentAPIView, ReplyCommentAPIView, MovieCommentListAPIView, DislikeCreateApiView, \
+    LikeCreateApiView
 
 app_name = 'movie'
+
 urlpatterns = [
     path('add', views.MovieCreateAPIView.as_view(), name='movie-add'),
     path('list', views.MovieListAPIView.as_view(), name='movie-list'),
@@ -17,10 +19,14 @@ urlpatterns = [
     path('catalog/list', views.GenreListAPIView.as_view(), name='catalog-list'),
     path('review/add', views.ReviewCreateAPIView.as_view(), name='review-add'),
     path('review/list/<slug:slug>', views.ReviewListAPIView.as_view(), name='review-list'),
-    path('comments', views.CreateCommentAPIView.as_view(), name='comments'),
-    path('comment', views.ParentListAPIView.as_view(), name='parent_list'),
-    path('comments/<int:id>', views.CommentListAPIView.as_view(), name='comments_list'),
-    path('comment_replay/<int:id>', views.CommentReplyListCreateAPIView.as_view(), name='comments_replay'),
-    path('comment_likes/add', views.CommentLikeView.as_view(), name='comments_likes'),
-    path('comment_dislikes/add', views.CommentDislikeView.as_view(), name='comments_dislikes'),
+
+]
+# Comment view for url
+urlpatterns += [
+    path('comments/likes/', LikeCreateApiView.as_view(), name='comment_like'),
+    path('comments/dislikes/', DislikeCreateApiView.as_view(), name='comment_dislike'),
+    path('comments', CreateCommentAPIView.as_view(), name='comment_create'),
+    path('comments/<int:movie_id>', MovieCommentListAPIView.as_view(), name='movie_comment_list'),
+    path('comments_replay/<int:comment_id>', ReplyCommentAPIView.as_view(), name='comment_replay'),
+
 ]
