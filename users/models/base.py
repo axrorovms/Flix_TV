@@ -12,8 +12,8 @@ from users.services.upload_files import upload_name
 
 class BaseAbstractUser(AbstractBaseUser, PermissionsMixin):
     class StatusChoice(TextChoices):
-        banned = "Banned", "banned"
-        approved = "Approved", "approved"
+        banned = "banned", "banned"
+        approved = "approved", "approved"
 
     username_validator = UnicodeUsernameValidator()
     email_validator = EmailValidator()

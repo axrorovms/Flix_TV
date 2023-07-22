@@ -1,1 +1,6 @@
-from .serializers import RegisterUserModelSerializer, CheckActivationSerializer, SendEmailResetSerializer
+from .serializers import (
+    UserModelSerializer,
+    CheckActivationSerializer,
+    SendEmailResetSerializer,
+    PasswordResetConfirmSerializer
+)

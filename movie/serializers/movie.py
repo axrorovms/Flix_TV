@@ -20,22 +20,36 @@ class MovieCreateModelSerializer(serializers.ModelSerializer):
 class MovieListModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ('title', 'release_year', 'status', 'photo', 'banner')
+        fields = ('id', 'title', 'release_year', 'is_premium', 'photo', 'banner')
+
+    @classmethod
+    def get_similar_movies(cls, slug):
+        try:
+            movie = Movie.objects.get(slug=slug)
+            movie_genres = movie.genre.all()
+            similar_movies = Movie.objects.filter(genre__in=movie_genres).exclude(slug=slug).distinct()
+
+            return similar_movies
+
+        except Movie.DoesNotExist:
+            return Movie.objects.none()
+
 
 
 class MovieDetailModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ('title', 'release_year', 'status', 'photo', 'banner')
+        fields = ('title', 'release_year', 'is_premium', 'photo', 'banner')
 
 
 
-    @classmethod
-    def get_suitable_movies(cls, user_id, slug):
-        user = dict(*User.objects.filter(id=user_id).values('subscription'))
-        movie_status = dict(*Movie.objects.filter(slug=slug).values('status'))
-        if user.get('subscription') == Movie.StatusChoice.values[0] and movie_status.get('status') == \
-                Movie.StatusChoice.values[1]:
-            response_data = {"message": "fucking dude buy premium"}
-            return response_data
-        return MovieListModelSerializer(Movie.objects.filter(slug=slug), many=True).data
+    @staticmethod
+    def get_suitable_movies(user_id, slug):
+        user = User.objects.filter(id=user_id).values('subscription').first()
+        movie = Movie.objects.filter(slug=slug).first()
+
+        if user and user.get('subscription') and movie and movie.is_premium:
+            return MovieDetailModelSerializer(Movie.objects.filter(slug=slug), many=True).data
+
+        response_data = {"message": "Sorry, you need a premium subscription to access this movie."}
+        return response_data

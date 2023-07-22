@@ -9,4 +9,4 @@ class Moviefilter(FilterSet):
 
     class Meta:
         model = Movie
-        fields = ['release_year']
+        fields = ['release_year', 'is_premium']

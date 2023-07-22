@@ -18,7 +18,7 @@ class MovieTest(APITestCase):
                                           age_limit=18,
                                           country="AF",
                                           type="Movie",
-                                          status="Premium",
+                                          is_premium=True,
                                           is_active=True,
                                           video_url="http://127.0.0.1:8000",
                                           views=99,
@@ -42,7 +42,7 @@ class MovieTest(APITestCase):
                                                "age_limit": 18,
                                                "country": "AF",
                                                "type": "Movie",
-                                               "status": "Premium",
+                                               "is_premium": True,
                                                "video_url": 'http://127.0.0.1:8000',
                                                "views": 99,
                                                "user": self.user.pk,
@@ -55,7 +55,7 @@ class MovieTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = dict(*response.data['results'])
         self.assertEqual(list(data.keys()),
-                         ['title', 'release_year', 'status', 'photo', 'banner', 'rating', 'videos', 'genre'])
+                         ['title', 'release_year', 'is_premium', 'photo', 'banner', 'rating', 'videos', 'genre'])
 
     def test_movie_premium_list(self):
         url = reverse('movie:movie-premium-list')
@@ -63,7 +63,7 @@ class MovieTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = dict(*response.data)
         self.assertEqual(list(data.keys()),
-                         ['title', 'release_year', 'status', 'photo', 'banner', 'rating', 'videos', 'genre'])
+                         ['title', 'release_year', 'is_premium', 'photo', 'banner', 'rating', 'videos', 'genre'])
 
     def test_movie_newest_list(self):
         url = reverse('movie:movie-newest-list')
@@ -71,7 +71,7 @@ class MovieTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = dict(*response.data)
         self.assertEqual(list(data.keys()),
-                         ['title', 'release_year', 'status', 'photo', 'banner', 'rating', 'videos', 'genre'])
+                         ['title', 'release_year', 'is_premium', 'photo', 'banner', 'rating', 'videos', 'genre'])
 
     def test_movie_popular_list(self):
         url = reverse('movie:movie-popular-list')
@@ -79,7 +79,7 @@ class MovieTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = dict(*response.data)
         self.assertEqual(list(data.keys()),
-                         ['title', 'release_year', 'status', 'photo', 'banner', 'rating', 'videos', 'genre'])
+                         ['title', 'release_year', 'is_premium', 'photo', 'banner', 'rating', 'videos', 'genre'])
 
     def test_movie_detail_list(self):
         url = reverse('movie:movie-detail', kwargs={'slug': self.movie.slug})
@@ -87,7 +87,7 @@ class MovieTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = dict(*response.data)
         self.assertEqual(list(data.keys()),
-                         ['title', 'release_year', 'status', 'photo', 'banner', 'rating', 'videos', 'genre'])
+                         ['title', 'release_year', 'is_premium', 'photo', 'banner', 'rating', 'videos', 'genre'])
 
     def test_movie_update(self):
         url = reverse('movie:update-movie', kwargs={'slug': self.movie.slug})
@@ -99,7 +99,7 @@ class MovieTest(APITestCase):
                 "age_limit": 18,
                 "country": "AF",
                 "type": "Movie",
-                "status": "Free",
+                "is_premium": False,
                 "video_url": "http://127.0.0.1:8000",
                 "views": 99,
                 "user": self.user.pk,

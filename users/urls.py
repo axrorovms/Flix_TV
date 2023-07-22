@@ -1,28 +1,30 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import path
+from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
+
 from users.views import (
-    UserTokenObtainPairView, UserTokenRefreshView, UserTokenVerifyView,
-    RegisterUserCreateAPIView, ActivationUserGenericAPIView, PasswordResetGenericAPIView,
-    PasswordResetConfirmUpdateAPIView, WishlistCreateAPIView, WishlistListAPIView, UserView, UserList
+    UserListCreateAPIView,
+    UserRetrieveUpdateDestroyAPIView,
+    ActivationUserGenericAPIView,
+    PasswordResetGenericAPIView,
+    PasswordResetConfirmUpdateAPIView,
+    WishlistListCreateAPIView,
+
 )
+
 app_name = 'user'
 
-# router = DefaultRouter()
-# router.register('', UserView)
-
-
 urlpatterns = [
-    path('add-wishlist', WishlistCreateAPIView.as_view(), name="add-wishlist"),
-    path('wishlist-list', WishlistListAPIView.as_view(), name="list-wishlist"),
-    path('token/create/', UserTokenObtainPairView.as_view(), name='token_create'),
-    path('token/refresh/', UserTokenRefreshView.as_view(), name='token_refresh'),
-    path('token/verify/', UserTokenVerifyView.as_view(), name='token_verify'),
-    path('ragister/', RegisterUserCreateAPIView.as_view(), name='register'),
-    path('activate-user/', ActivationUserGenericAPIView.as_view(), name='activated_account'),
+    path('', UserListCreateAPIView.as_view(), name='users_list_create'),
+    path('activate/', ActivationUserGenericAPIView.as_view(), name='activated_account'),
     path('reset-password/', PasswordResetGenericAPIView.as_view(), name='reset_password'),
     path('reset-password-confirm/', PasswordResetConfirmUpdateAPIView.as_view(), name='reset_password_confirm'),
+    path('<int:pk>', UserRetrieveUpdateDestroyAPIView.as_view()),
 
-    path('<int:pk>', UserView.as_view()),
-    path('list/', UserList.as_view())
+    path('token/', TokenObtainPairView.as_view(parser_classes = (FormParser, MultiPartParser)), name='token_create'),
+    path('token/refresh/', TokenRefreshView.as_view(parser_classes = (FormParser, MultiPartParser)), name='token_refresh'),
+    path('token/verify/', TokenVerifyView.as_view(parser_classes = (FormParser, MultiPartParser)), name='token_verify'),
+
+    path('wishlist', WishlistListCreateAPIView.as_view(), name="wishlist_list_create"),
 
 ]
