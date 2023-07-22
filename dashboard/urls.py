@@ -1,56 +1,34 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 from dashboard.views import (
-    MovieList,
-    MovieCreate,
-    MovieUpdate,
-    MovieDelete,
+    MovieListCreateApiView,
+    MovieUpdateDelete,
     CommentList,
     CommentDelete,
     ReviewList,
     ReviewDelete,
-    DashboardAPIView
+    DashboardAPIView,
+    GenreCreateAPIView,
 )
-
 
 app_name = 'dashboard'
 
-
 urlpatterns = [
-
     # Movies --------------------------------------------------------------------------------
-    path('movies/list/', MovieList.as_view(), name='movie_list'),
-    path('movies/create/', MovieCreate.as_view(), name='movie_create'),
-    path('movies/update/<slug:slug>/', MovieUpdate.as_view(), name='movie_update'),
-    path('movies/delete/<slug:slug>/', MovieDelete.as_view(), name='movie_delete'),
+    path('movies', MovieListCreateApiView.as_view(), name='movie_create_list'),
+    path('movies/<slug:slug>', MovieUpdateDelete.as_view(), name='movie_update_delete'),
 
     # Comments ------------------------------------------------------------------------------
-    path('comment/list/', CommentList.as_view(), name='comment_list'),
-    path('comment/delete/<int:pk>/', CommentDelete.as_view(), name='comment_delete'),
+    path('comments', CommentList.as_view(), name='comment_list'),
+    path('comments/<int:pk>', CommentDelete.as_view(), name='comment_delete'),
 
     # Reviews -------------------------------------------------------------------------------
-    path('review/list/', ReviewList.as_view(), name='review_list'),
-    path('review/delete/<int:pk>/', ReviewDelete.as_view(), name='review_delete'),
+    path('reviews', ReviewList.as_view(), name='review_list'),
+    path('reviews/<int:pk>', ReviewDelete.as_view(), name='review_delete'),
 
     # Dashboards ----------------------------------------------------------------------------
-    path('main/', DashboardAPIView.as_view(), name='dashboard'),
+    path('', DashboardAPIView.as_view(), name='dashboard'),
 
+    # Genres --------------------------------------------------------------------------------
+    path('genre', GenreCreateAPIView.as_view(), name='genre'),
 ]
 
-#
-# RestApi
-#
-# RestFullApi
-#
-# path('movies/list/', MovieList.as_view(), name='movie_list'),
-# path('movies/create/', MovieCreate.as_view(), name='movie_create'),
-# path('movies/update/<slug:slug>/', MovieUpdate.as_view(), name='movie_update'),
-# path('movies/delete/<slug:slug>/', MovieDelete.as_view(), name='movie_delete'),
-#
-#
-#
-# path('movies', MovieListCreateApiView.as_view(), name='movie_create_list'), (create, list)
-# path('movies/<slug:slug>/', MovieDelete.as_view(), name='movie_delete'),
-
-
-# api design

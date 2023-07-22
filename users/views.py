@@ -1,39 +1,32 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework import status
+from rest_framework.generics import GenericAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
-from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, DestroyAPIView, UpdateAPIView, \
-    RetrieveAPIView, RetrieveUpdateDestroyAPIView
 
-from users.models import User
-from users.serializers import RegisterUserModelSerializer, CheckActivationSerializer, SendEmailResetSerializer
-from users.serializers.serializers import PasswordResetConfirmSerializer, UserModelSerializer, UserListSerializer
-
-from users.models import Wishlist
-from users.serializers.wishlist import WishlistCreateModelSerializer, WishlistListModelSerializer
+from users.models import User, Wishlist
+from users.serializers.wishlist import WishlistModelSerializer
+from users.serializers import (
+    CheckActivationSerializer,
+    SendEmailResetSerializer,
+    PasswordResetConfirmSerializer,
+    UserModelSerializer
+)
 
 
-# Create your views here.
-
-class UserTokenObtainPairView(TokenObtainPairView):
-    parser_classes = (FormParser, MultiPartParser)
-
-
-class UserTokenRefreshView(TokenRefreshView):
-    parser_classes = (FormParser, MultiPartParser)
-
-
-class UserTokenVerifyView(TokenVerifyView):
-    parser_classes = (FormParser, MultiPartParser)
-
-
-class RegisterUserCreateAPIView(CreateAPIView):
-    serializer_class = RegisterUserModelSerializer
+class UserListCreateAPIView(ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserModelSerializer
     parser_classes = (FormParser, MultiPartParser)
     permission_classes = (AllowAny,)
+
+
+class UserRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserModelSerializer
+    permission_classes = (AllowAny,)
+    parser_classes = (FormParser, MultiPartParser)
 
 
 class ActivationUserGenericAPIView(GenericAPIView):
@@ -77,32 +70,17 @@ class PasswordResetConfirmUpdateAPIView(GenericAPIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class UserList(ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserListSerializer
-    parser_classes = FormParser, MultiPartParser
-
-
-class UserView(RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserModelSerializer
-
-
-class WishlistCreateAPIView(CreateAPIView):
+class WishlistListCreateAPIView(ListCreateAPIView):
     queryset = Wishlist.objects.all()
-    serializer_class = WishlistCreateModelSerializer
+    serializer_class = WishlistModelSerializer
+    parser_classes = (FormParser, MultiPartParser)
 
-    def post(self, request, *args, **kwargs):
-        wishlist, created = Wishlist.objects.get_or_create(movie_id=request.data.get('movie'),
-                                                           user_id=request.data.get('user'))
+    def create(self, request, *args, **kwargs):
+        wishlist, created = self.queryset.get_or_create(
+            movie_id=request.data.get('movie'),
+            user_id=request.data.get('user')
+        )
         if not created:
             wishlist.delete()
             return Response({"message": "fucking deleted"})
-        return Response({"message": "fucking added"}, status.HTTP_201_CREATED)
-
-
-class WishlistListAPIView(ListAPIView):
-    queryset = Wishlist.objects.all()
-    serializer_class = WishlistListModelSerializer
-
-
+        return Response({"message": "fucking added"}, status=status.HTTP_201_CREATED)
