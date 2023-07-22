@@ -42,4 +42,4 @@ class MovieTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = dict(*response.data)
         self.assertEqual(list(data.keys()),
-                         ['movie', 'photo', 'title', 'release_year', 'status', 'genre', 'rating', ])
+                         ['movie', 'photo', 'title', 'release_year', 'is_premium', 'genre', 'rating', ])

@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from movie.models.comment import Comment, Like, DisLike
+
+from movie.models import LikeDislike
+from movie.models.comment import Comment
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -24,16 +26,21 @@ class ChildSerializer(serializers.ModelSerializer):
         fields = ('id', 'author', 'text', 'children', 'movie_id')
 
 
-
-class LikeSerializer(serializers.ModelSerializer):
+class LikeDislikeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Like
-        fields = ('id', 'comment', 'like', 'user')
-        read_only_fields = ('id',)
+        model = LikeDislike
+        fields = '__all__'
 
 
-class DisLikeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DisLike
-        fields = ('id', 'comment', 'dislike', 'user')
-        read_only_fields = ('id',)
+# class LikeSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Like
+#         fields = ('id', 'comment', 'like', 'user')
+#         read_only_fields = ('id',)
+#
+#
+# class DisLikeSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = DisLike
+#         fields = ('id', 'comment', 'dislike', 'user')
+#         read_only_fields = ('id',)

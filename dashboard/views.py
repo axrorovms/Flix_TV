@@ -26,6 +26,7 @@ from dashboard.serializers import (
 
 # Movies -------------------------------------------------------------------------------------
 
+
 class MovieListCreateApiView(ListCreateAPIView):
     # permission_classes = [AdminOrModerator]
     queryset = Movie.objects.all()
@@ -48,7 +49,7 @@ class MovieListCreateApiView(ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class MovieUpdateDelete(RetrieveUpdateDestroyAPIView):  # +++
+class MovieUpdateDelete(RetrieveUpdateDestroyAPIView):
     # permission_classes = [IsAdmin]
     queryset = Movie.objects.all()
     serializer_class = MovieModelSerializer
@@ -85,6 +86,7 @@ class ReviewDelete(DestroyAPIView):
 
 
 # Dashboard ------------------------------------------------------------------------------------
+
 
 class DashboardAPIView(APIView):
     # permission_classes = [AdminOrModerator]

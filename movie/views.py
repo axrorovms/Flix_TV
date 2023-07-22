@@ -1,18 +1,22 @@
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView, RetrieveAPIView
+from rest_framework.utils.serializer_helpers import ReturnDict
+from rest_framework.views import APIView
 
-from movie.models import Movie, Genre, MovieVideo, Review, Comment, DisLike, Like
+from movie.models import Movie, Genre, MovieVideo, Review, Comment, LikeDislike
 from movie.serializers import MovieDetailModelSerializer, MovieListModelSerializer, MovieCreateModelSerializer, \
     GenreCreateModelSerializer, GenreListModelSerializer, ReviewListModelSerializer, ReviewCreateModelSerializer, \
-    CommentSerializer, ChildSerializer, DisLikeSerializer, LikeSerializer
+    CommentSerializer, ChildSerializer, LikeDislikeSerializer
 from movie.filters import Moviefilter
+from users.models import User
 
 videos_params = openapi.Parameter(
     'videos', openapi.IN_FORM,
@@ -55,7 +59,7 @@ class MovieListAPIView(ListAPIView):
             movie_data = {
                 'id': movie.id,
                 'title': movie.title,
-                'status': movie.status,
+                'is_premium': movie.is_premium,
                 'description': movie.description,
                 'release_year': movie.release_year,
                 'genre_list': Movie.get_genre_list(movie),
@@ -68,7 +72,7 @@ class MovieListAPIView(ListAPIView):
 
 
 class MoviePremiumListAPIView(ListAPIView):
-    queryset = Movie.objects.filter(status='Premium')
+    queryset = Movie.objects.filter(is_premium=True)
     serializer_class = MovieListModelSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter)
     filterset_class = Moviefilter
@@ -195,29 +199,72 @@ class ParentListAPIView(ListAPIView):
         return context
 
 
-class CommentLikeView(CreateAPIView):
-    queryset = Like.objects.all()
-    serializer_class = LikeSerializer
+class LikeDislikeView(generics.GenericAPIView):
+    serializer_class = LikeDislikeSerializer
 
-    def create(self, request, *args, **kwargs):
-        comment_id = request.data.get('comment')
-        user = request.user
-        if Like.objects.filter(user=user):
-            Like.objects.filter(user=user).delete()
-            return Response({"error": "Fucking like deleted"}, status=status.HTTP_400_BAD_REQUEST)
-        Like.objects.create(user=user, comment_id=comment_id, like=1)
-        return Response({"success": "Fucking like added"}, status=status.HTTP_201_CREATED)
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            user_id = request.data.get('user')
+            comment_id = request.data.get('comment')
+            is_like = request.data.get('is_like').capitalize()
 
+            user = get_object_or_404(User, pk=user_id)
+            comment = get_object_or_404(Comment, pk=comment_id)
 
-class CommentDislikeView(CreateAPIView):
-    queryset = DisLike.objects.all()
-    serializer_class = DisLikeSerializer
+            # Update Logic
 
-    def create(self, request, *args, **kwargs):
-        comment_id = request.data.get('comment')
-        user = request.user
-        if DisLike.objects.filter(user=user):
-            DisLike.objects.filter(user=user).delete()
-            return Response({"error": "Fucking dislike deleted"}, status=status.HTTP_400_BAD_REQUEST)
-        DisLike.objects.create(user=user, comment_id=comment_id, dislike=1)
-        return Response({"success": "Fucking dislike added"}, status=status.HTTP_201_CREATED)
+            # Create Logic
+            serializer.user = user_id
+            serializer.comment = comment_id
+            serializer.is_like = is_like
+            serializer.save()
+
+            return Response(serializer.data, status=201)
+        else:
+            return Response(serializer.errors, status=400)
+
+    def put(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            user = request.data.get('user')
+            comment = request.data.get('comment')
+            is_like = request.data.get('is_like').capitalize()
+
+            instance = get_object_or_404(LikeDislike, user=user, comment=comment)
+
+            if instance:
+                instance.is_like = is_like
+                instance.save()
+                return Response(serializer.data, status=201)
+
+            return Response(serializer.data, status=404)
+        else:
+            return Response(serializer.data, status=400)
+
+        # class CommentLikeView(CreateAPIView):
+#     queryset = Like.objects.all()
+#     serializer_class = LikeSerializer
+#
+#     def create(self, request, *args, **kwargs):
+#         comment_id = request.data.get('comment')
+#         user = request.user
+#         if Like.objects.filter(user=user):
+#             Like.objects.filter(user=user).delete()
+#             return Response({"error": "Fucking like deleted"}, status=status.HTTP_400_BAD_REQUEST)
+#         Like.objects.create(user=user, comment_id=comment_id, like=1)
+#         return Response({"success": "Fucking like added"}, status=status.HTTP_201_CREATED)
+#
+#
+# class CommentDislikeView(CreateAPIView):
+#     queryset = DisLike.objects.all()
+#     serializer_class = DisLikeSerializer
+#
+#     def create(self, request, *args, **kwargs):
+#         comment_id = request.data.get('comment')
+#         user = request.user
+#         if DisLike.objects.filter(user=user):
+#             DisLike.objects.filter(user=user).delete()
+#             return Response({"error": "Fucking dislike deleted"}, status=status.HTTP_400_BAD_REQUEST)
+#         DisLike.objects.create(user=user, comment_id=comment_id, dislike=1)
+#         return Response({"success": "Fucking dislike added"}, status=status.HTTP_201_CREATED)
