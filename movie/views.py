@@ -11,6 +11,7 @@ from rest_framework import status
 
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.filters import SearchFilter
+
 from django_filters.rest_framework import DjangoFilterBackend
 from shared.pagination import StandardResultsSetPagination
 from rest_framework.response import Response
@@ -22,6 +23,15 @@ from movie.serializers import MovieDetailModelSerializer, MovieListModelSerializ
     GenreCreateModelSerializer, GenreListModelSerializer, ReviewListModelSerializer, ReviewCreateModelSerializer, \
     CommentSerializer, ChildSerializer
 from movie.filters import Moviefilter
+
+videos_params = openapi.Parameter(
+    'videos', openapi.IN_FORM,
+    description="test manual param",
+    type=openapi.TYPE_ARRAY,
+    items=openapi.Items(type=openapi.TYPE_FILE),
+    required=False)
+
+
 from rest_framework import status
 from movie.serializers import (MovieDetailModelSerializer, MovieListModelSerializer,
                                GenreListModelSerializer, ReviewListModelSerializer,
@@ -31,39 +41,48 @@ from movie.serializers import (MovieDetailModelSerializer, MovieListModelSeriali
 
 
 # Movie ----------------------------------------------------------------------------------------------
+class MovieCreateAPIView(CreateAPIView):
+
+    @swagger_auto_schema(manual_parameters=[videos_params])
+    def post(self, request, *args, **kwargs):
+        videos = request.FILES.getlist('video')
+        response = super().post(request, *args, **kwargs)
+        movie = Movie.objects.create(
+            user_id=response.data['user'],
+            title=response.data['title'],
+            slug=response.data['slug']
+        )
+        movie.genre.set(response.data['genre'])
+        MovieVideo.objects.bulk_create(MovieVideo(video=video, movie=movie) for video in videos)
+        return response
 
 
-class MovieListAPIView(APIView):
-    def get(self, request):
-        queryset = Movie.objects.filter(is_active=True)
-        filter_backend = DjangoFilterBackend()
-        search_backend = SearchFilter()
-        queryset = filter_backend.filter_queryset(request, queryset, view=self)
-        queryset = search_backend.filter_queryset(request, queryset, view=self)
-        pagination_class = StandardResultsSetPagination()
-        page = pagination_class.paginate_queryset(queryset, request, view=self)
-        if page is not None:
-            serializer = MovieListModelSerializer(page, many=True)
-            for movie_data in serializer.data:
-                movie = Movie.objects.get(pk=movie_data['id'])
-                movie_data['rating'] = movie.get_rating(movie)
-                movie_data['genre'] = movie.get_genre_list(movie)
-                movie_data['videos'] = movie.get_videos(movie)
-            return pagination_class.get_paginated_response(serializer.data)
 
-        serializer = MovieListModelSerializer(queryset, many=True)
-        serializer.data['rating'] = Movie.get_rating
-        return Response(serializer.data)
-
-
-class MovieDetailAPIView(APIView):
-    queryset = Movie.objects.all()
-    serializer_class = MovieDetailModelSerializer
+class MovieListAPIView(ListAPIView):
+    queryset = Movie.objects.filter(is_active=True)
+    serializer_class = MovieListModelSerializer
+    filter_backends = (DjangoFilterBackend, SearchFilter)
+    filterset_class = Moviefilter
+    search_fields = ('title', 'release_year', 'genre__title')
 
     def get(self, request, *args, **kwargs):
-        user_id = request.user.id
-        slug = self.kwargs['slug']
-        return Response(MovieDetailModelSerializer.get_suitable_movies(user_id, slug))
+        movies = self.get_queryset()
+        data = []
+        for movie in movies:
+            movie_data = {
+                'id': movie.id,
+                'title': movie.title,
+                'status': movie.status,
+                'description': movie.description,
+                'release_year': movie.release_year,
+                'genre_list': Movie.get_genre_list(movie),
+                'videos': Movie.get_videos(movie),
+                'rating': Movie.get_rating(movie),
+            }
+            data.append(movie_data)
+
+        return Response(data)
+
 
 
 class MoviePremiumListAPIView(ListAPIView):
@@ -91,8 +110,42 @@ class GenreListAPIView(ListAPIView):
     serializer_class = GenreListModelSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter)
 
+    def get(self, request, *args, **kwargs):
+        genres = self.get_queryset()
+        data = []
+        for genre in genres:
+            movie_data = {
+                'title': genre.title,
+                'image': genre.image,
+                'count_movies': Genre.with_movies_count(genre)
+            }
+            data.append(movie_data)
+
+        return Response(data)
+
+
+      
+class SimilarMovieListAPIView(ListAPIView):
+    queryset = Movie.objects.all()
+    serializer_class = MovieListModelSerializer
+
+    def get_queryset(self):
+        slug = self.kwargs['slug']
+        return Movie.get_similar_movies(slug)
+
+
+class MovieDetailAPIView(RetrieveAPIView):
+    queryset = Movie.objects.all()
+    serializer_class = MovieDetailModelSerializer
+
+    def get(self, request, *args, **kwargs):
+        movie = self.get_queryset()
+        user_id = request.user.id
+        slug = self.kwargs['slug']
+        return Response(MovieDetailModelSerializer.get_suitable_movies(user_id, slug))
 
 # Reviews ------------------------------------------------------------------------------------------------
+
 
 class ReviewCreateAPIView(CreateAPIView):
     queryset = Review.objects.all()
@@ -105,7 +158,7 @@ class ReviewListAPIView(ListAPIView):
 
     def get_queryset(self):
         slug = self.kwargs['slug']
-        return ReviewListModelSerializer.get_review(slug)
+        return Review.get_review(slug)
 
 
 # Comment________________________________________________________________

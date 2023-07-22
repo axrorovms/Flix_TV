@@ -6,7 +6,15 @@ from users.models import User
 class VideoSerializerModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = MovieVideo
-        fields = ('video', )
+        fields = ('video',)
+
+
+class MovieCreateModelSerializer(serializers.ModelSerializer):
+    video = VideoSerializerModelSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Movie
+        fields = ('title', 'slug', 'user', 'genre', 'video')
 
 
 class MovieListModelSerializer(serializers.ModelSerializer):
