@@ -45,10 +45,11 @@ class LatestUsersSerializer(ModelSerializer):
 
 # Movie Serializers ----------------------------------------------------------------------------------------------
 
-class MovieListSerializer(ModelSerializer):
+
+class MovieModelSerializer(ModelSerializer):
     class Meta:
         model = Movie
-        fields = ('slug', 'title', 'type', 'views', 'status', 'created_at', 'is_active')
+        fields = "__all__"
 
 
 class VideoSerializer(ModelSerializer):
@@ -57,15 +58,8 @@ class VideoSerializer(ModelSerializer):
         fields = ('video',)
 
 
-class MovieCreateDeleteSerializer(ModelSerializer):
-    video = VideoSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Movie
-        fields = ('title', 'slug', 'user', 'genre', 'video')
-
-
 class TopMoviesSerializer(ModelSerializer):
+
     class Meta:
         model = Movie
         fields = ('id', 'title', 'type')
@@ -75,8 +69,7 @@ class TopMoviesSerializer(ModelSerializer):
         if not instance.reviews.all():
             rep['rating'] = 0.0
         else:
-            rep[
-                'rating'] = f'{sum([i.rating for i in instance.reviews.all()]) / instance.reviews.all().count():.1f}'
+            rep['rating'] = f'{sum([i.rating for i in instance.reviews.all()]) / instance.reviews.all().count():.1f}'
         rep['genre'] = [i.title for i in instance.genre.all()]
 
         return rep
@@ -85,4 +78,4 @@ class TopMoviesSerializer(ModelSerializer):
 class LatestMoviesSerializer(ModelSerializer):
     class Meta:
         model = Movie
-        fields = ('id', 'title', 'type', 'status')
+        fields = ('id', 'title', 'type', 'is_premium')

@@ -10,15 +10,16 @@ from movie.models import Genre
 from users.models import User
 
 
+class ActivationManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_active=True).all()
+
+
 class Movie(BaseModel):
     class TypeChoice(models.TextChoices):
-        movie = "Movie", "movie"
-        live = "Live", "live"
-        series = "Series", "series"
-
-    class StatusChoice(models.TextChoices):
-        free = "Free", "free"
-        premium = "Premium", "premium"
+        movie = "movie", "movie"
+        live = "live", "live"
+        series = "series", "series"
 
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -30,7 +31,7 @@ class Movie(BaseModel):
     photo = models.ImageField(upload_to=upload_name, null=True, blank=True)
     type = models.CharField(max_length=255, choices=TypeChoice.choices, default=TypeChoice.movie)
     video_url = models.URLField(null=True, blank=True)
-    status = models.CharField(max_length=255, choices=StatusChoice.choices, default=StatusChoice.free)
+    is_premium = models.BooleanField(default=False)
     views = models.BigIntegerField(default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=False)
@@ -50,20 +51,48 @@ class Movie(BaseModel):
     def reviews(self):
         return self.review_set.all()
 
-    @staticmethod
-    def count_reviews(movies):
-        return movies.annotate(num_reviews=Count('review')).aggregate(total_reviews=Sum('num_reviews'))[
-            'total_reviews'] or 0
+    # @staticmethod
+    # def count_reviews(movies):
+    #     return movies.annotate(num_reviews=Count('review')).aggregate(total_reviews=Sum('num_reviews'))[
+    #         'total_reviews'] or 0
 
     @staticmethod
-    def count_comments(movies):
-        return movies.annotate(num_comments=Count('comment')).aggregate(total_comments=Sum('num_comments'))[
-            'total_comments'] or 0
+    def count_reviews(movies): # +++
+        return movies.review_set.count()
+
+
+    # @staticmethod
+    # def count_comments(movies):
+    #     return movies.annotate(num_comments=Count('comment')).aggregate(total_comments=Sum('num_comments'))[
+    #         'total_comments'] or 0
+
+    @staticmethod
+    def count_comments(movies):  # +++
+        return movies.comment_set.count()
+
 
     @staticmethod
     def get_view_sum():
         movies = Movie.objects.filter(created_at__month=datetime.now().month)
         return movies.aggregate(total_views=Sum('views'))['total_views'] or 0
+
+    @classmethod
+    def get_videos(cls, movie):
+        return [video.video for video in movie.movievideo_set.all()]
+
+    @classmethod
+    def get_genre_list(cls, movie):
+        return [genre.title for genre in movie.genre.values_list('title', flat=True)]
+
+    @classmethod
+    def get_rating(cls, movie):
+        if not movie.review_set.all():
+            return 0.00
+        else:
+            return round(sum([review.rating for review in movie.review_set.all()]) / movie.review_set.count(), 2)
+
+    objects = models.Manager()
+    active_movies = ActivationManager()
 
 
 class MovieVideo(models.Model):

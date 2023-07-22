@@ -24,6 +24,7 @@ class ChildSerializer(serializers.ModelSerializer):
         fields = ('id', 'author', 'text', 'children', 'movie_id')
 
 
+
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like

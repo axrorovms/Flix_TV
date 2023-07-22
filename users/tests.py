@@ -19,7 +19,7 @@ class MovieTest(APITestCase):
                                           age_limit=18,
                                           country="AF",
                                           type="Movie",
-                                          status="Premium",
+                                          is_premium=True,
                                           is_active=True,
                                           video_url="http://127.0.0.1:8000",
                                           views=99,
