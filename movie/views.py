@@ -1,26 +1,19 @@
-from rest_framework.generics import (ListAPIView, CreateAPIView, RetrieveAPIView, ListCreateAPIView)
+from rest_framework.generics import (ListAPIView, CreateAPIView, ListCreateAPIView)
 from rest_framework.views import APIView
 
-from movie.models import Movie, Genre, Review, Comment, DisLike, Like
+from movie.models import Movie, Genre, Review, Comment, Like, DisLike
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from shared.pagination import StandardResultsSetPagination
 from rest_framework.response import Response
 from movie.filters import Moviefilter
 from rest_framework import status
-from drf_yasg import openapi
 from movie.serializers import (MovieDetailModelSerializer, MovieListModelSerializer,
                                GenreListModelSerializer, ReviewListModelSerializer,
-                               ReviewCreateModelSerializer, CommentSerializer,
-                               ChildSerializer, DisLikeSerializer, LikeSerializer)
-
-videos_params = openapi.Parameter(
-    'videos', openapi.IN_FORM,
-    description="test manual param",
-    type=openapi.TYPE_ARRAY,
-    items=openapi.Items(type=openapi.TYPE_FILE),
-    required=False)
+                               ReviewCreateModelSerializer, CommentSerializer, ChildSerializer, LikeSerializer,
+                               DisLikeSerializer,
+                               )
 
 
 # Movie ----------------------------------------------------------------------------------------------
