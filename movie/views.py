@@ -15,8 +15,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from shared.pagination import StandardResultsSetPagination
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView, RetrieveAPIView, \
-    ListCreateAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView, RetrieveAPIView
 
 from movie.models import Movie, Genre, MovieVideo, Review, Comment, DisLike, Like
 from movie.serializers import MovieDetailModelSerializer, MovieListModelSerializer, MovieCreateModelSerializer, \

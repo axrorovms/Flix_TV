@@ -11,12 +11,6 @@ class ReviewListSerializer(ModelSerializer):
         fields = ('id', 'movie', 'author', 'text', 'rating', 'created_at')
 
 
-class ReviewDeleteSerializer(ModelSerializer):
-    class Meta:
-        model = Review
-        fields = "__all__"
-
-
 class LatestReviewsSerializer(ModelSerializer):
     class Meta:
         model = Review
@@ -29,12 +23,6 @@ class CommentListSerializer(ModelSerializer):
     class Meta:
         model = Comment
         fields = ('id', 'movie', 'author', 'text', 'created_at')
-
-
-class CommentDeleteSerializer(ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = "__all__"
 
 
 class LatestUsersSerializer(ModelSerializer):
@@ -59,7 +47,6 @@ class VideoSerializer(ModelSerializer):
 
 
 class TopMoviesSerializer(ModelSerializer):
-
     class Meta:
         model = Movie
         fields = ('id', 'title', 'type')
