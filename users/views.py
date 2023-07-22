@@ -76,8 +76,10 @@ class WishlistListCreateAPIView(ListCreateAPIView):
     parser_classes = (FormParser, MultiPartParser)
 
     def create(self, request, *args, **kwargs):
-        wishlist, created = Wishlist.objects.get_or_create(movie_id=request.data.get('movie'),
-                                                           user_id=request.data.get('user'))
+        wishlist, created = self.queryset.get_or_create(
+            movie_id=request.data.get('movie'),
+            user_id=request.data.get('user')
+        )
         if not created:
             wishlist.delete()
             return Response({"message": "fucking deleted"})
