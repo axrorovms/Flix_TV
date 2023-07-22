@@ -21,7 +21,7 @@ videos_params = openapi.Parameter(
     items=openapi.Items(type=openapi.TYPE_FILE),
     required=False)
 
-d
+
 class MovieCreateAPIView(CreateAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieCreateModelSerializer
