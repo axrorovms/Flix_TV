@@ -1,7 +1,7 @@
 from django.urls import path
 from movie import views
-from movie.views import CreateCommentAPIView, ReplyCommentAPIView, MovieCommentListAPIView, DislikeCreateApiView, \
-    LikeCreateApiView
+from movie.views import CreateCommentAPIView, CommentReplyListCreateAPIView,CommentListAPIView, CommentDislikeView, \
+    CommentLikeView
 
 app_name = 'movie'
 
@@ -23,9 +23,9 @@ urlpatterns = [
 
 # Comment view for url
 urlpatterns += [
-    path('comments/likes/', LikeCreateApiView.as_view(), name='comment_like'),
-    path('comments/dislikes/', DislikeCreateApiView.as_view(), name='comment_dislike'),
+    path('comments/likes/', CommentLikeView.as_view(), name='comment_like'),
+    path('comments/dislikes/', CommentDislikeView.as_view(), name='comment_dislike'),
     path('comments', CreateCommentAPIView.as_view(), name='comment_create'),
-    path('comments/<int:movie_id>', MovieCommentListAPIView.as_view(), name='movie_comment_list'),
-    path('comments_replay/<int:comment_id>', ReplyCommentAPIView.as_view(), name='comment_replay'),
+    path('comments/<int:movie_id>', CommentListAPIView.as_view(), name='movie_comment_list'),
+    path('comments_replay/<int:comment_id>', CommentReplyListCreateAPIView.as_view(), name='comment_replay'),
 ]

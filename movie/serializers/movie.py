@@ -28,14 +28,13 @@ class MovieDetailModelSerializer(serializers.ModelSerializer):
         model = Movie
         fields = ('title', 'release_year', 'status', 'photo', 'banner')
 
-
-
-    @classmethod
-    def get_suitable_movies(cls, user_id, slug):
-        user = dict(*User.objects.filter(id=user_id).values('subscription'))
+    def get_suitable_movies(self, user_id, slug):
+        user = dict(*User.objects.filter(id=user_id).values('subscription')).get('subscription')
         movie_status = dict(*Movie.objects.filter(slug=slug).values('status'))
-        if user.get('subscription') == Movie.StatusChoice.values[0] and movie_status.get('status') == \
-                Movie.StatusChoice.values[1]:
+        if user:
+            return MovieDetailModelSerializer(Movie.objects.get(slug=slug, many=True)).data
+        elif not user and movie_status.get('status') == Movie.StatusChoice.values[1]:
             response_data = {"message": "fucking dude buy premium"}
             return response_data
-        return MovieListModelSerializer(Movie.objects.filter(slug=slug), many=True).data
+        else:
+            return MovieDetailModelSerializer(Movie.objects.filter(slug=slug), many=True).data
