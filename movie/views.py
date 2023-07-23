@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -110,13 +111,13 @@ class GenreListAPIView(ListAPIView):
     filter_backends = (DjangoFilterBackend, SearchFilter)
 
     def get(self, request, *args, **kwargs):
-        genres = self.get_queryset()
+        genres = self.get_queryset().annotate(movies_count=Count('movie'))
         data = []
         for genre in genres:
             movie_data = {
                 'title': genre.title,
-                'image': genre.image,
-                'count_movies': Genre.with_movies_count(genre)
+                'image': genre.image.url,
+                'count_movies': genre.movies_count
             }
             data.append(movie_data)
 
@@ -140,12 +141,21 @@ class MovieDetailAPIView(RetrieveAPIView):
         movie = self.get_queryset()
         user_id = request.user.id
         slug = self.kwargs['slug']
-        return Response(MovieDetailModelSerializer.get_suitable_movies(user_id, slug))
+        return Response(MovieDetailModelSerializer.get_suitable_movies(movie, user_id, slug))
 
 
 class ReviewCreateAPIView(CreateAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewCreateModelSerializer
+
+    def create(self, request, *args, **kwargs):
+        author_id = request.data.get('author')
+        text = request.data.get('text')
+        rating = request.data.get('rating')
+        movie_id = request.data.get('movie')
+        if Review.objects.filter(author_id=author_id):
+            return Response({"message": "You've already fucking reviewed"})
+        Review.objects.create(author_id=author_id, text=text, rating=rating, movie_id=movie_id)
 
 
 class ReviewListAPIView(ListAPIView):
@@ -163,14 +173,6 @@ class CreateCommentAPIView(CreateAPIView):
     queryset = Movie.objects.all()
 
 
-class CommentListAPIView(ListAPIView):
-    serializer_class = CommentSerializer
-
-    def get_queryset(self):
-        comment_id = self.kwargs['id']
-        return Comment.objects.filter(id=comment_id)
-
-
 class CommentReplyListCreateAPIView(CreateAPIView):
     serializer_class = CommentSerializer
     parser_classes = (MultiPartParser, FormParser)
@@ -180,19 +182,29 @@ class CommentReplyListCreateAPIView(CreateAPIView):
         return Comment.objects.filter(parent_id=comment_id)
 
     def perform_create(self, serializer):
-        comment_id = self.kwargs['id']
+        comment_id = self.kwargs['comment_id']
         parent_comment = Comment.objects.get(id=comment_id)
         serializer.save(parent=parent_comment)
 
 
-class ParentListAPIView(ListAPIView):
+class CommentListAPIView(ListAPIView):
     queryset = Comment.objects.filter(parent__isnull=True)
     serializer_class = ChildSerializer
+
+    def get_queryset(self):
+        movie_id = self.kwargs['movie_id']
+        queryset = Comment.objects.filter(parent__isnull=True, movie_id=movie_id)
+        return queryset
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context['show_children'] = True
         return context
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.serializer_class(queryset, many=True, context=self.get_serializer_context())
+        return Response(serializer.data)
 
 
 class CommentLikeView(CreateAPIView):
@@ -201,12 +213,18 @@ class CommentLikeView(CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         comment_id = request.data.get('comment')
-        user = request.user
-        if Like.objects.filter(user=user):
-            Like.objects.filter(user=user).delete()
-            return Response({"error": "Fucking like deleted"}, status=status.HTTP_400_BAD_REQUEST)
-        Like.objects.create(user=user, comment_id=comment_id, like=1)
-        return Response({"success": "Fucking like added"}, status=status.HTTP_201_CREATED)
+        user = request.data.get('user')
+        if Like.objects.filter(user_id=user):
+            Like.objects.filter(user_id=user).delete()
+            return Response({"error": "Fucking like deleted"})
+        elif DisLike.objects.filter(user_id=user):
+            DisLike.objects.filter(user_id=user).delete()
+            Like.objects.create(user_id=user, comment_id=comment_id, like=1)
+            return Response({"success": "Fucking like added and deleted your fucking dislike"},
+                            status=status.HTTP_201_CREATED)
+        else:
+            Like.objects.create(user_id=user, comment_id=comment_id, like=1)
+            return Response({"success": "Fucking like added"}, status=status.HTTP_201_CREATED)
 
 
 class CommentDislikeView(CreateAPIView):
@@ -215,9 +233,15 @@ class CommentDislikeView(CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         comment_id = request.data.get('comment')
-        user = request.user
-        if DisLike.objects.filter(user=user):
-            DisLike.objects.filter(user=user).delete()
-            return Response({"error": "Fucking dislike deleted"}, status=status.HTTP_400_BAD_REQUEST)
-        DisLike.objects.create(user=user, comment_id=comment_id, dislike=1)
-        return Response({"success": "Fucking dislike added"}, status=status.HTTP_201_CREATED)
+        user = request.data.get('user')
+        if DisLike.objects.filter(user_id=user):
+            DisLike.objects.filter(user_id=user).delete()
+            return Response({"error": "Fucking dislike deleted"})
+        elif Like.objects.filter(user_id=user):
+            Like.objects.filter(user_id=user).delete()
+            DisLike.objects.create(user_id=user, comment_id=comment_id, dislike=1)
+            return Response({"success": "Fucking dislike added and deleted your fucking like"},
+                            status=status.HTTP_201_CREATED)
+        else:
+            DisLike.objects.create(user_id=user, comment_id=comment_id, dislike=1)
+            return Response({"success": "Fucking dislike added"}, status=status.HTTP_201_CREATED)

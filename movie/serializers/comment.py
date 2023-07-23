@@ -18,8 +18,9 @@ class ChildSerializer(serializers.ModelSerializer):
 
     def get_children(self, comment):
         if self.context.get('show_children'):
-            children = Comment.objects.filter(parent=comment)
-            serializer = CommentSerializer(children, many=True, read_only=True)
+            movie_id = comment.movie_id
+            children = Comment.objects.filter(parent=comment, movie_id=movie_id)
+            serializer = ChildSerializer(children, many=True, read_only=True, context={'show_children': False})
             return serializer.data
         return []
 
@@ -30,14 +31,13 @@ class ChildSerializer(serializers.ModelSerializer):
         return rep
 
 
-
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
-        fields = ('comment',)
+        fields = ('comment', 'user',)
 
 
 class DisLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DisLike
-        fields = ('comment',)
+        fields = ('comment', 'user',)

@@ -65,6 +65,33 @@ class Movie(BaseModel):
         movies = Movie.objects.filter(created_at__month=datetime.now().month)
         return movies.aggregate(total_views=Sum('views'))['total_views'] or 0
 
+    @classmethod
+    def get_rating(cls, movie):
+        if not movie.review_set.all():
+            return 0.00
+        else:
+            return round(sum([review.rating for review in movie.review_set.all()]) / movie.review_set.count(), 2)
+
+    @classmethod
+    def get_videos(cls, movie):
+        return [video.video for video in movie.movievideo_set.all()]
+
+    @classmethod
+    def get_genre_list(cls, movie):
+        return [genre.title for genre in movie.genre.all()]
+
+    @classmethod
+    def get_similar_movies(cls, slug):
+        try:
+            movie = Movie.objects.get(slug=slug)
+            movie_genres = movie.genre.all()
+            similar_movies = Movie.objects.filter(genre__in=movie_genres).exclude(slug=slug).distinct()
+
+            return similar_movies
+
+        except Movie.DoesNotExist:
+            return Movie.objects.none()
+
 
 class MovieVideo(models.Model):
     video = models.FileField(upload_to=upload_name,
