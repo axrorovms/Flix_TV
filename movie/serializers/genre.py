@@ -3,12 +3,6 @@ from rest_framework import serializers
 from movie.models import Genre, Movie
 
 
-class GenreCreateModelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Genre
-        exclude = ('id',)
-
-
 class GenreListModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
