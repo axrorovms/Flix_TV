@@ -1,45 +1,30 @@
 from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
 
 from rest_framework import status
-from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
-from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView, GenericAPIView
 
-from movie.models import Movie, Genre, MovieVideo, Review, Comment, DisLike, Like
-from movie.serializers import MovieDetailModelSerializer, MovieListModelSerializer, MovieCreateModelSerializer, \
-    GenreCreateModelSerializer, GenreListModelSerializer, ReviewListModelSerializer, ReviewCreateModelSerializer, \
-    CommentSerializer, ChildSerializer, DisLikeSerializer, LikeSerializer
 from movie.filters import Moviefilter
+from movie.models import (
+    Movie,
+    Genre,
+    Review,
+    Comment,
+    LikeDislike
+)
 
-videos_params = openapi.Parameter(
-    'videos', openapi.IN_FORM,
-    description="test manual param",
-    type=openapi.TYPE_ARRAY,
-    items=openapi.Items(type=openapi.TYPE_FILE),
-    required=False)
-
-
-class MovieCreateAPIView(CreateAPIView):
-    queryset = Movie.objects.all()
-    serializer_class = MovieCreateModelSerializer
-    parser_classes = (MultiPartParser, FormParser)
-
-    @swagger_auto_schema(manual_parameters=[videos_params])
-    def post(self, request, *args, **kwargs):
-        videos = request.FILES.getlist('video')
-        response = super().post(request, *args, **kwargs)
-        movie = Movie.objects.create(
-            user_id=response.data['user'],
-            title=response.data['title'],
-            slug=response.data['slug']
-        )
-        movie.genre.set(response.data['genre'])
-        MovieVideo.objects.bulk_create(MovieVideo(video=video, movie=movie) for video in videos)
-        return response
+from movie.serializers import (
+    MovieDetailModelSerializer,
+    MovieListModelSerializer,
+    GenreListModelSerializer,
+    ReviewListModelSerializer,
+    ReviewCreateModelSerializer,
+    CommentSerializer,
+    ChildSerializer,
+    LikeDislikeSerializer
+)
 
 
 class MovieListAPIView(ListAPIView):
@@ -50,13 +35,13 @@ class MovieListAPIView(ListAPIView):
     search_fields = ('title', 'release_year', 'genre__title')
 
     def get(self, request, *args, **kwargs):
-        movies = self.get_queryset()
+        movies = self.queryset
         data = []
         for movie in movies:
             movie_data = {
                 'id': movie.id,
                 'title': movie.title,
-                'status': movie.status,
+                'is_premium': movie.is_premium,
                 'description': movie.description,
                 'release_year': movie.release_year,
                 'genre_list': Movie.get_genre_list(movie),
@@ -69,7 +54,7 @@ class MovieListAPIView(ListAPIView):
 
 
 class MoviePremiumListAPIView(ListAPIView):
-    queryset = Movie.objects.filter(status='Premium')
+    queryset = Movie.objects.filter(is_premium=True)
     serializer_class = MovieListModelSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter)
     filterset_class = Moviefilter
@@ -86,23 +71,6 @@ class MovieNewestListAPIView(ListAPIView):
     queryset = Movie.objects.order_by('-release_year')
     serializer_class = MovieListModelSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter)
-
-
-class MovieUpdateAPIView(UpdateAPIView):
-    queryset = Movie.objects.all()
-    serializer_class = MovieCreateModelSerializer
-    lookup_field = 'slug'
-
-
-class MovieDeleteAPIView(DestroyAPIView):
-    queryset = Movie.objects.all()
-    lookup_field = 'slug'
-
-
-class GenreCreateAPIView(CreateAPIView):
-    queryset = Genre.objects.all()
-    serializer_class = GenreCreateModelSerializer
-    parser_classes = (MultiPartParser, FormParser)
 
 
 class GenreListAPIView(ListAPIView):
@@ -133,7 +101,7 @@ class SimilarMovieListAPIView(ListAPIView):
         return Movie.get_similar_movies(slug)
 
 
-class MovieDetailAPIView(RetrieveAPIView):
+class MovieRetrieveAPIView(RetrieveAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieDetailModelSerializer
 
@@ -161,87 +129,35 @@ class ReviewCreateAPIView(CreateAPIView):
 class ReviewListAPIView(ListAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewListModelSerializer
-
-    def get_queryset(self):
-        slug = self.kwargs['slug']
-        return Review.get_review(slug)
+    lookup_field = 'slug'
+    lookup_url_kwarg = 'slug'
 
 
 class CreateCommentAPIView(CreateAPIView):
     serializer_class = CommentSerializer
-    parser_classes = (MultiPartParser, FormParser)
     queryset = Movie.objects.all()
-
-
-class CommentReplyListCreateAPIView(CreateAPIView):
-    serializer_class = CommentSerializer
-    parser_classes = (MultiPartParser, FormParser)
-
-    def get_queryset(self):
-        comment_id = self.kwargs['id']
-        return Comment.objects.filter(parent_id=comment_id)
-
-    def perform_create(self, serializer):
-        comment_id = self.kwargs['comment_id']
-        parent_comment = Comment.objects.get(id=comment_id)
-        serializer.save(parent=parent_comment)
 
 
 class CommentListAPIView(ListAPIView):
     queryset = Comment.objects.filter(parent__isnull=True)
     serializer_class = ChildSerializer
 
-    def get_queryset(self):
-        movie_id = self.kwargs['movie_id']
-        queryset = Comment.objects.filter(parent__isnull=True, movie_id=movie_id)
-        return queryset
-
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context['show_children'] = True
-        return context
-
-    def get(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.serializer_class(queryset, many=True, context=self.get_serializer_context())
-        return Response(serializer.data)
+    def list(self, request, *args, **kwargs):
+        movie_id = kwargs.get('movie_id')
+        queryset = self.get_queryset().filter(movie_id=movie_id)
+        comments = self.serializer_class(queryset, many=True)
+        return Response(comments.data)
 
 
-class CommentLikeView(CreateAPIView):
-    queryset = Like.objects.all()
-    serializer_class = LikeSerializer
+class LikeDislikeView(GenericAPIView):
+    serializer_class = LikeDislikeSerializer
 
-    def create(self, request, *args, **kwargs):
-        comment_id = request.data.get('comment')
-        user = request.data.get('user')
-        if Like.objects.filter(user_id=user):
-            Like.objects.filter(user_id=user).delete()
-            return Response({"error": "Fucking like deleted"})
-        elif DisLike.objects.filter(user_id=user):
-            DisLike.objects.filter(user_id=user).delete()
-            Like.objects.create(user_id=user, comment_id=comment_id, like=1)
-            return Response({"success": "Fucking like added and deleted your fucking dislike"},
-                            status=status.HTTP_201_CREATED)
-        else:
-            Like.objects.create(user_id=user, comment_id=comment_id, like=1)
-            return Response({"success": "Fucking like added"}, status=status.HTTP_201_CREATED)
-
-
-class CommentDislikeView(CreateAPIView):
-    queryset = DisLike.objects.all()
-    serializer_class = DisLikeSerializer
-
-    def create(self, request, *args, **kwargs):
-        comment_id = request.data.get('comment')
-        user = request.data.get('user')
-        if DisLike.objects.filter(user_id=user):
-            DisLike.objects.filter(user_id=user).delete()
-            return Response({"error": "Fucking dislike deleted"})
-        elif Like.objects.filter(user_id=user):
-            Like.objects.filter(user_id=user).delete()
-            DisLike.objects.create(user_id=user, comment_id=comment_id, dislike=1)
-            return Response({"success": "Fucking dislike added and deleted your fucking like"},
-                            status=status.HTTP_201_CREATED)
-        else:
-            DisLike.objects.create(user_id=user, comment_id=comment_id, dislike=1)
-            return Response({"success": "Fucking dislike added"}, status=status.HTTP_201_CREATED)
+    def post(self, request, *args, **kwargs):
+        try:
+            instance = LikeDislike.objects.get(user_id=request.data.get('user'), comment_id=request.data.get('comment'))
+            serializer = self.serializer_class(instance=instance, data=request.data, partial=True)
+        except LikeDislike.DoesNotExist:
+            serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)

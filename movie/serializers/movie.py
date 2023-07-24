@@ -1,40 +1,26 @@
 from rest_framework import serializers
-from movie.models import Movie, MovieVideo
+from movie.models import Movie
 from users.models import User
-
-
-class VideoSerializerModelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MovieVideo
-        fields = ('video',)
-
-
-class MovieCreateModelSerializer(serializers.ModelSerializer):
-    video = VideoSerializerModelSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Movie
-        fields = ('title', 'slug', 'user', 'genre', 'video')
 
 
 class MovieListModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ('title', 'release_year', 'status', 'photo', 'banner')
+        fields = ('title', 'release_year', 'is_premium', 'photo', 'banner')
 
 
 class MovieDetailModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ('title', 'release_year', 'status', 'photo', 'banner')
+        fields = ('title', 'release_year', 'is_premium', 'photo', 'banner')
 
-    def get_suitable_movies(self, user_id, slug):
-        user = dict(*User.objects.filter(id=user_id).values('subscription')).get('subscription')
-        movie_status = dict(*Movie.objects.filter(slug=slug).values('status'))
-        if user:
-            return MovieDetailModelSerializer(Movie.objects.get(slug=slug, many=True)).data
-        elif not user and movie_status.get('status') == Movie.StatusChoice.values[1]:
-            response_data = {"message": "fucking dude buy premium"}
-            return response_data
-        else:
+    @staticmethod
+    def get_suitable_movies(user_id, slug):
+        user = User.objects.filter(id=user_id).values('subscription').first()
+        movie = Movie.objects.filter(slug=slug).first()
+
+        if user and user.get('subscription') and movie and movie.is_premium:
             return MovieDetailModelSerializer(Movie.objects.filter(slug=slug), many=True).data
+
+        response_data = {"message": "Sorry, you need a premium subscription to access this movie."}
+        return response_data
