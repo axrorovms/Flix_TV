@@ -52,25 +52,13 @@ class Movie(BaseModel):
     def reviews(self):
         return self.review_set.all()
 
-    # @staticmethod
-    # def count_reviews(movies):
-    #     return movies.annotate(num_reviews=Count('review')).aggregate(total_reviews=Sum('num_reviews'))[
-    #         'total_reviews'] or 0
-
     @staticmethod
-    def count_reviews(movies): # +++
+    def count_reviews(movies):  # +++
         return movies.review_set.count()
-
-
-    # @staticmethod
-    # def count_comments(movies):
-    #     return movies.annotate(num_comments=Count('comment')).aggregate(total_comments=Sum('num_comments'))[
-    #         'total_comments'] or 0
 
     @staticmethod
     def count_comments(movies):  # +++
         return movies.comment_set.count()
-
 
     @staticmethod
     def get_view_sum():
@@ -103,9 +91,6 @@ class Movie(BaseModel):
 
         except Movie.DoesNotExist:
             return Movie.objects.none()
-
-
-        return [genre.title for genre in movie.genre.values_list('title', flat=True)]
 
     @classmethod
     def get_rating(cls, movie):

@@ -1,4 +1,4 @@
-from movie.models import Movie, Comment, Review, MovieVideo
+from movie.models import Movie, Comment, Review, MovieVideo, Genre
 from rest_framework.serializers import ModelSerializer
 from users.models import User
 
@@ -66,3 +66,9 @@ class LatestMoviesSerializer(ModelSerializer):
     class Meta:
         model = Movie
         fields = ('id', 'title', 'type', 'is_premium')
+
+
+class GenreCreateModelSerializer(ModelSerializer):
+    class Meta:
+        model = Genre
+        fields = '__all__'
