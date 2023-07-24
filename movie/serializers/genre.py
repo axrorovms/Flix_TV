@@ -1,6 +1,13 @@
 from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer
 
 from movie.models import Genre, Movie
+
+
+class GenreCreateModelSerializer(ModelSerializer):
+    class Meta:
+        model = Genre
+        fields = '__all__'
 
 
 class GenreListModelSerializer(serializers.ModelSerializer):
