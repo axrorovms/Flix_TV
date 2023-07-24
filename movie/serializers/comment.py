@@ -7,9 +7,14 @@ from movie.models.comment import Comment
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ('id', 'movie', 'author', 'text', 'created_at')
+        fields = '__all__'
         read_only_fields = ('id', 'created_at')
-        required_fields = ('id',)
+
+
+class LikeDislikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LikeDislike
+        fields = '__all__'
 
 
 class RecursiveField(serializers.Serializer):
@@ -23,24 +28,4 @@ class ChildSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('id', 'author', 'text', 'children', 'movie_id')
-
-
-class LikeDislikeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = LikeDislike
-        fields = '__all__'
-
-
-# class LikeSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Like
-#         fields = ('id', 'comment', 'like', 'user')
-#         read_only_fields = ('id',)
-#
-#
-# class DisLikeSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = DisLike
-#         fields = ('id', 'comment', 'dislike', 'user')
-#         read_only_fields = ('id',)
+        fields = ('id', 'author', 'text', 'movie_id', 'children')

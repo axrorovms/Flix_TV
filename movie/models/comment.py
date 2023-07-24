@@ -4,6 +4,11 @@ from movie.models import Movie
 from users.models import User
 
 
+# class CommentManager(models.Manager):
+#     def get_queryset(self):
+#         return super().get_queryset().filter(parent=None).all()
+
+
 class Comment(MPTTModel):
     author = models.ForeignKey('users.User', models.CASCADE)
     movie = models.ForeignKey('movie.Movie', models.CASCADE)
@@ -14,25 +19,17 @@ class Comment(MPTTModel):
     class Meta:
         db_table = 'comment'
 
+    def children(self):
+        return Comment.objects.filter(parent=self)
+    #
+    # objects = CommentManager()
+
 
 class LikeDislike(models.Model):
     user = models.ForeignKey('users.User', models.CASCADE)
     comment = models.ForeignKey('movie.Comment', models.CASCADE)
     is_like = models.BooleanField()
 
-# class Like(models.Model):
-#     comment = models.ForeignKey(Comment, models.CASCADE)
-#     like = models.IntegerField(default=0)
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#
-#     class Meta:
-#         db_table = 'like'
-#
-#
-# class DisLike(models.Model):
-#     comment = models.ForeignKey(Comment, models.CASCADE)
-#     dislike = models.IntegerField(default=0)
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#
-#     class Meta:
-#         db_table = 'dislike'
+    class Meta:
+        db_table = 'comment_likes'
+
