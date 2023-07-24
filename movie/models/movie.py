@@ -104,7 +104,6 @@ class Movie(BaseModel):
         except Movie.DoesNotExist:
             return Movie.objects.none()
 
-
         return [genre.title for genre in movie.genre.values_list('title', flat=True)]
 
     @classmethod
