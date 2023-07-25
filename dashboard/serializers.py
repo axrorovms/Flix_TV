@@ -17,7 +17,7 @@ class LatestReviewsSerializer(ModelSerializer):
         fields = ('id', 'movie', 'author')
 
 
-# Comment Serializers ----------------------------------------------------
+# Comment Serializers ------------------------------------------------------------------------------------------
 
 class CommentListSerializer(ModelSerializer):
     class Meta:

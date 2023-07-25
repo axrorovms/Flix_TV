@@ -1,10 +1,7 @@
-from datetime import datetime
-
 from django.core.validators import FileExtensionValidator
-from django.db.models import Count, Sum
 from django_countries.fields import CountryField
+from django.db.models import Sum
 from django.db import models
-from rest_framework.response import Response
 
 from shared.models import BaseModel, upload_name
 from movie.models import Genre
@@ -54,23 +51,21 @@ class Movie(BaseModel):
 
     @staticmethod
     def count_reviews(movies):  # +++
-        return movies.review_set.count()
+        return sum(i.reviews.count() for i in movies) or 0
 
     @staticmethod
     def count_comments(movies):  # +++
-        return movies.comment_set.count()
+        return sum(i.comments.count() for i in movies) or 0
 
     @staticmethod
-    def get_view_sum():
-        movies = Movie.objects.filter(created_at__month=datetime.now().month)
-        return movies.aggregate(total_views=Sum('views'))['total_views'] or 0
+    def get_view_sum(movies_added):
+        return movies_added.aggregate(total_views=Sum('views'))['total_views'] or 0
 
     @classmethod
     def get_rating(cls, movie):
-        if not movie.review_set.all():
-            return 0.00
-        else:
-            return round(sum([review.rating for review in movie.review_set.all()]) / movie.review_set.count(), 2)
+        if movie.review_set.exists():
+            return round(sum([review.rating for review in movie.review_set.all()]) / movie.review_set.count(), 1)
+        return 0.0
 
     @classmethod
     def get_videos(cls, movie):
@@ -78,7 +73,7 @@ class Movie(BaseModel):
 
     @classmethod
     def get_genre_list(cls, movie):
-        return [genre.title for genre in movie.genre.all()]
+        return movie.genre.values_list('title', flat=True)
 
     @classmethod
     def get_similar_movies(cls, slug):
@@ -91,13 +86,6 @@ class Movie(BaseModel):
 
         except Movie.DoesNotExist:
             return Movie.objects.none()
-
-    @classmethod
-    def get_rating(cls, movie):
-        if not movie.review_set.all():
-            return 0.00
-        else:
-            return round(sum([review.rating for review in movie.review_set.all()]) / movie.review_set.count(), 2)
 
     objects = models.Manager()
     active_movies = ActivationManager()

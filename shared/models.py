@@ -20,7 +20,7 @@ FILE_TYPES = {
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    slug = models.SlugField(max_length=100, blank=True)
+    slug = models.SlugField(max_length=100, blank=True, unique=True)
 
     class Meta:
         abstract = True

@@ -1,9 +1,12 @@
 from rest_framework import serializers
+from rest_framework.fields import HiddenField
 
-from movie.models import Review, Movie
+from movie.models import Review
 
 
 class ReviewCreateModelSerializer(serializers.ModelSerializer):
+    author = HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Review
         exclude = ('id',)
@@ -14,8 +17,3 @@ class ReviewListModelSerializer(serializers.ModelSerializer):
         model = Review
         fields = ('author', 'text', 'rating', 'created_at')
 
-    @classmethod
-    def get_review(cls, slug):
-        movie_id = dict(*Movie.objects.filter(slug=slug).values('id')).get('id')
-        reviews = Review.objects.filter(movie=movie_id)
-        return reviews

@@ -35,7 +35,7 @@ class MovieListAPIView(ListAPIView):
     search_fields = ('title', 'release_year', 'genre__title')
 
     def get(self, request, *args, **kwargs):
-        movies = self.queryset
+        movies = self.get_queryset()
         data = []
         for movie in movies:
             movie_data = {
@@ -44,9 +44,10 @@ class MovieListAPIView(ListAPIView):
                 'is_premium': movie.is_premium,
                 'description': movie.description,
                 'release_year': movie.release_year,
-                'genre_list': Movie.get_genre_list(movie),
                 'videos': Movie.get_videos(movie),
                 'rating': Movie.get_rating(movie),
+                'genre_list': Movie.get_genre_list(movie),
+
             }
             data.append(movie_data)
 
@@ -97,8 +98,7 @@ class SimilarMovieListAPIView(ListAPIView):
     serializer_class = MovieListModelSerializer
 
     def get_queryset(self):
-        slug = self.kwargs['slug']
-        return Movie.get_similar_movies(slug)
+        return Movie.get_similar_movies(self.kwargs.get('slug'))
 
 
 class MovieRetrieveAPIView(RetrieveAPIView):
@@ -106,34 +106,23 @@ class MovieRetrieveAPIView(RetrieveAPIView):
     serializer_class = MovieDetailModelSerializer
 
     def get(self, request, *args, **kwargs):
-        movie = self.get_queryset()
-        user_id = request.user.id
-        slug = self.kwargs['slug']
-        return Response(MovieDetailModelSerializer.get_suitable_movies(movie, user_id, slug))
+        return Response(MovieDetailModelSerializer.get_suitable_movies(request.user.id, self.kwargs['slug']))
 
 
 class ReviewCreateAPIView(CreateAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewCreateModelSerializer
 
-    def create(self, request, *args, **kwargs):
-        author_id = request.data.get('author')
-        text = request.data.get('text')
-        rating = request.data.get('rating')
-        movie_id = request.data.get('movie')
-        if Review.objects.filter(author_id=author_id):
-            return Response({"message": "You've already fucking reviewed"})
-        Review.objects.create(author_id=author_id, text=text, rating=rating, movie_id=movie_id)
-
 
 class ReviewListAPIView(ListAPIView):
-    queryset = Review.objects.all()
     serializer_class = ReviewListModelSerializer
     lookup_field = 'slug'
-    lookup_url_kwarg = 'slug'
+
+    def get_queryset(self):
+        return Review.get_review(slug=self.kwargs.get('slug'))
 
 
-class CreateCommentAPIView(CreateAPIView):
+class CommentCreateAPIView(CreateAPIView):
     serializer_class = CommentSerializer
     queryset = Movie.objects.all()
 
@@ -145,19 +134,22 @@ class CommentListAPIView(ListAPIView):
     def list(self, request, *args, **kwargs):
         movie_id = kwargs.get('movie_id')
         queryset = self.get_queryset().filter(movie_id=movie_id)
-        comments = self.serializer_class(queryset, many=True)
+        comments = self.serializer_class(queryset, many=True, context={'request': request})
         return Response(comments.data)
 
 
-class LikeDislikeView(GenericAPIView):
+class LikeDislikeView(CreateAPIView):
+    queryset = LikeDislike.objects.all()
     serializer_class = LikeDislikeSerializer
 
-    def post(self, request, *args, **kwargs):
-        try:
-            instance = LikeDislike.objects.get(user_id=request.data.get('user'), comment_id=request.data.get('comment'))
-            serializer = self.serializer_class(instance=instance, data=request.data, partial=True)
-        except LikeDislike.DoesNotExist:
-            serializer = self.serializer_class(data=request.data)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        response_data = serializer.save()
+
+        if response_data.get('message') == 'added':
+            return Response({"message": "added"}, status=200)
+        elif response_data.get('message') == 'updated':
+            return Response({"message": "updated"}, status=200)
+        elif response_data.get('message') == 'deleted':
+            return Response({"message": "deleted"}, status=200)
