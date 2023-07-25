@@ -4,7 +4,7 @@ upstream web_app {
 
 server {
     listen 80;
-    server_name 10.10.5.175;
+    server_name 68.183.65.77;
 
     location / {
         proxy_pass http://web_app;
@@ -22,7 +22,6 @@ server {
     location /media/ {
         alias /app/media/;
     }
-
 }
 
 
