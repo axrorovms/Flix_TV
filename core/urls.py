@@ -36,7 +36,6 @@ urlpatterns = [
     path('api/v1/movie/', include('movie.urls', namespace=movie_app_name)),
     path('api/v1/dashboard/', include('dashboard.urls', namespace=dash_app_name)),
     path('api/v1/find/', include('elastic_search.urls')),
-
 ]
 
 if settings.DEBUG:

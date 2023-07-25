@@ -97,3 +97,10 @@ class SendEmailResetSerializer(serializers.Serializer):
         self.context['user'] = user
         ActivationEmail(self.context.get('request'), self.context).send([user.email])
         return attrs
+
+
+
+
+
+
+

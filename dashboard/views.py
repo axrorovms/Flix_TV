@@ -10,7 +10,6 @@ from rest_framework.generics import (
     CreateAPIView)
 
 from movie.models import Movie, Comment, Review, MovieVideo, Genre
-from movie.serializers import GenreCreateModelSerializer
 from users.models import User
 from shared.pagination import StandardResultsSetPagination
 from dashboard.serializers import (
@@ -21,10 +20,12 @@ from dashboard.serializers import (
     LatestUsersSerializer,
     LatestReviewsSerializer,
     MovieModelSerializer,
+    GenreCreateModelSerializer
 )
 
 
 # Movies -------------------------------------------------------------------------------------
+
 
 class MovieListCreateApiView(ListCreateAPIView):
     # permission_classes = [AdminOrModerator]
@@ -45,10 +46,10 @@ class MovieListCreateApiView(ListCreateAPIView):
         ]
         MovieVideo.objects.bulk_create(movie_videos_to_create)
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status.HTTP_201_CREATED)
 
 
-class MovieUpdateDelete(RetrieveUpdateDestroyAPIView):  # +++
+class MovieUpdateDelete(RetrieveUpdateDestroyAPIView):
     # permission_classes = [IsAdmin]
     queryset = Movie.objects.all()
     serializer_class = MovieModelSerializer
@@ -86,12 +87,13 @@ class ReviewDelete(DestroyAPIView):
 
 # Dashboard ------------------------------------------------------------------------------------
 
+
 class DashboardAPIView(APIView):
     # permission_classes = [AdminOrModerator]
     def get(self, request):
         movies_added = Movie.objects.filter(created_at__month=datetime.now().month)
         rep = {
-            'unique_views': Movie.get_view_sum(),
+            'unique_views': Movie.get_view_sum(movies_added),
             'movies_added': movies_added.count(),
             'new_comments': Movie.count_comments(movies_added),
             'new_reviews': Movie.count_reviews(movies_added),

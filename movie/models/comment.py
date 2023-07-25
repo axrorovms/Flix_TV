@@ -14,8 +14,8 @@ class Comment(MPTTModel):
     class Meta:
         db_table = 'comment'
 
-    def children(self):
-        return Comment.objects.filter(parent=self)
+    def get_children(self):
+        return self.children.all()
 
 
 class LikeDislike(models.Model):
@@ -25,3 +25,4 @@ class LikeDislike(models.Model):
 
     class Meta:
         db_table = 'comment_likes'
+
