@@ -61,6 +61,12 @@ class Movie(BaseModel):
     def get_view_sum(movies_added):
         return movies_added.aggregate(total_views=Sum('views'))['total_views'] or 0
 
+    @property
+    def get_rate(self):
+        if self.review_set.exists():
+            return round(sum([review.rating for review in self.review_set.all()]) / self.review_set.count(), 1)
+        return 0.0
+
     @classmethod
     def get_rating(cls, movie):
         if movie.review_set.exists():

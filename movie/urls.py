@@ -7,7 +7,6 @@ app_name = 'movie'
 urlpatterns = [
 
     # Movie
-    # path('premium', views.MoviePremiumListAPIView.as_view(), name='movie_premium_list'),
     path('', views.MovieListAPIView.as_view(), name='movie_list'),
     path('similar/<slug:slug>', views.SimilarMovieListAPIView.as_view(), name='movie_similar'),
     path('detail/<slug:slug>', views.MovieRetrieveAPIView.as_view(), name='movie_detail'),
