@@ -30,14 +30,6 @@ class MovieListModelSerializer(serializers.ModelSerializer):
         model = Movie
         fields = ('slug', 'title', 'release_year', 'photo', 'banner', 'is_premium', 'genre', 'average_rating')
 
-    # def get_own_rating(self, movie):
-    #     request = self.context.get('request')
-    #     if request and request.user.is_authenticated:
-    #         review = movie.review_set.filter(author=request.user).first()
-    #         if review:
-    #             return review.rating
-    #     return 0
-
     def get_average_rating(self, movie):
         return movie.get_rate
 

@@ -124,7 +124,6 @@ class MovieAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Review.objects.filter(pk=self.review.pk).exists())
 
-
 # from rest_framework import status
 # from django.urls import reverse
 # from django.test import TestCase

@@ -1,11 +1,10 @@
-from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Count
+from users.models import User
 
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView, GenericAPIView
-from rest_framework.views import APIView
+from rest_framework.filters import SearchFilter
+from rest_framework.response import Response
 
 from movie.filters import Moviefilter
 from movie.models import (
@@ -26,7 +25,6 @@ from movie.serializers import (
     ChildSerializer,
     LikeDislikeSerializer
 )
-from users.models import User
 
 
 class MovieRetrieveAPIView(RetrieveAPIView):
