@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView, GenericAPIView
+from rest_framework.views import APIView
 
 from movie.filters import Moviefilter
 from movie.models import (
@@ -25,53 +26,59 @@ from movie.serializers import (
     ChildSerializer,
     LikeDislikeSerializer
 )
+from users.models import User
+
+
+class MovieRetrieveAPIView(RetrieveAPIView):
+    queryset = Movie.objects.all()
+    serializer_class = MovieDetailModelSerializer
+
+    def get(self, request, *args, **kwargs):
+        user_id = request.user.id
+        slug = self.kwargs['slug']
+        data = self.get_suitable_movie_data(user_id, slug)
+        return Response(data)
+
+    @staticmethod
+    def get_suitable_movie_data(user_id, slug):
+        user = User.objects.filter(id=user_id).first()
+        movie = Movie.objects.filter(slug=slug).first()
+
+        if user and movie:
+            if not movie.is_premium or (user.subscription and movie.is_premium):
+                return {
+                    'id': movie.id,
+                    'slug': movie.slug,
+                    'title': movie.title,
+                    'is_premium': movie.is_premium,
+                    'duration': movie.film_time_duration,
+                    'country': movie.country.name,
+                    'age_limit': movie.age_limit,
+                    'type': movie.type,
+                    'views': movie.views,
+                    'description': movie.description,
+                    'release_year': movie.release_year,
+                    'rating': Movie.get_rating(movie),
+                    'genre_list': Movie.get_genre_list(movie),
+                    'photo': movie.photo.url,
+                    'banner': movie.banner.url,
+                    'videos': [i.url for i in Movie.get_videos(movie)]
+                }
+            else:
+                response_data = {"message": "Sorry, you need a premium subscription to access this movie."}
+        else:
+            response_data = {"message": "Movie not found."}
+
+        return response_data
 
 
 class MovieListAPIView(ListAPIView):
-    queryset = Movie.objects.filter(is_active=True)
+    queryset = Movie.objects.all()
     serializer_class = MovieListModelSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter)
     filterset_class = Moviefilter
+    filterset_fields = ['is_premium']
     search_fields = ('title', 'release_year', 'genre__title')
-
-    def get(self, request, *args, **kwargs):
-        movies = self.get_queryset()
-        data = []
-        for movie in movies:
-            movie_data = {
-                'id': movie.id,
-                'title': movie.title,
-                'is_premium': movie.is_premium,
-                'description': movie.description,
-                'release_year': movie.release_year,
-                'videos': Movie.get_videos(movie),
-                'rating': Movie.get_rating(movie),
-                'genre_list': Movie.get_genre_list(movie),
-
-            }
-            data.append(movie_data)
-
-        return Response(data)
-
-
-class MoviePremiumListAPIView(ListAPIView):
-    queryset = Movie.objects.filter(is_premium=True)
-    serializer_class = MovieListModelSerializer
-    filter_backends = (DjangoFilterBackend, SearchFilter)
-    filterset_class = Moviefilter
-    search_fields = ('title', 'release_year', 'genre__title')
-
-
-class MoviePopularListAPIView(ListAPIView):
-    queryset = Movie.objects.order_by('-views')
-    serializer_class = MovieListModelSerializer
-    filter_backends = (DjangoFilterBackend, SearchFilter)
-
-
-class MovieNewestListAPIView(ListAPIView):
-    queryset = Movie.objects.order_by('-release_year')
-    serializer_class = MovieListModelSerializer
-    filter_backends = (DjangoFilterBackend, SearchFilter)
 
 
 class GenreListAPIView(ListAPIView):
@@ -99,14 +106,6 @@ class SimilarMovieListAPIView(ListAPIView):
 
     def get_queryset(self):
         return Movie.get_similar_movies(self.kwargs.get('slug'))
-
-
-class MovieRetrieveAPIView(RetrieveAPIView):
-    queryset = Movie.objects.all()
-    serializer_class = MovieDetailModelSerializer
-
-    def get(self, request, *args, **kwargs):
-        return Response(MovieDetailModelSerializer.get_suitable_movies(request.user.id, self.kwargs['slug']))
 
 
 class ReviewCreateAPIView(CreateAPIView):
