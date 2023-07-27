@@ -20,7 +20,7 @@ from dashboard.serializers import (
     LatestUsersSerializer,
     LatestReviewsSerializer,
     MovieModelSerializer,
-    GenreCreateModelSerializer
+    GenreCreateModelSerializer, VideoSerializer
 )
 
 
@@ -33,20 +33,19 @@ class MovieListCreateApiView(ListCreateAPIView):
     serializer_class = MovieModelSerializer
     pagination_class = StandardResultsSetPagination
 
-    def create(self, request, *args, **kwargs):
-        videos = request.FILES.getlist('video')
+    def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         movie = serializer.instance
         movie.genre.set(serializer.validated_data['genre'])
 
-        movie_videos_to_create = [
-            MovieVideo(video=video, movie=movie) for video in videos
-        ]
-        MovieVideo.objects.bulk_create(movie_videos_to_create)
-
         return Response(serializer.data, status.HTTP_201_CREATED)
+
+
+class MovieVideoCreateApiView(CreateAPIView):
+    queryset = MovieVideo.objects.all()
+    serializer_class = VideoSerializer
 
 
 class MovieUpdateDelete(RetrieveUpdateDestroyAPIView):

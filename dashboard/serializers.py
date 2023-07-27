@@ -43,7 +43,7 @@ class MovieModelSerializer(ModelSerializer):
 class VideoSerializer(ModelSerializer):
     class Meta:
         model = MovieVideo
-        fields = ('video',)
+        fields = '__all__'
 
 
 class TopMoviesSerializer(ModelSerializer):

@@ -7,7 +7,7 @@ from dashboard.views import (
     ReviewList,
     ReviewDelete,
     DashboardAPIView,
-    GenreCreateAPIView,
+    GenreCreateAPIView, MovieVideoCreateApiView,
 )
 
 app_name = 'dashboard'
@@ -16,6 +16,7 @@ urlpatterns = [
     # Movies --------------------------------------------------------------------------------
     path('movies', MovieListCreateApiView.as_view(), name='movie_create_list'),
     path('movies/<slug:slug>', MovieUpdateDelete.as_view(), name='movie_update_delete'),
+    path('movies/videos/', MovieVideoCreateApiView.as_view(), name='movie_video_create'),
 
     # Comments ------------------------------------------------------------------------------
     path('comments', CommentList.as_view(), name='comment_list'),
