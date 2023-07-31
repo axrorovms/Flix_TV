@@ -58,7 +58,6 @@ class TopMoviesSerializer(ModelSerializer):
         else:
             rep['rating'] = f'{sum([i.rating for i in instance.reviews.all()]) / instance.reviews.all().count():.1f}'
         rep['genre'] = [i.title for i in instance.genre.all()]
-
         return rep
 
 

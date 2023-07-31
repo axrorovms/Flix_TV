@@ -7,10 +7,3 @@ class StaticStorage(S3Boto3Storage):
 
 
 
-
-
-
-
-
-
-

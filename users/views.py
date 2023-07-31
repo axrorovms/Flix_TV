@@ -1,11 +1,13 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework import status
-from rest_framework.generics import GenericAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
+from rest_framework.generics import GenericAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView, RetrieveAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
+from shared import permissions
 from users.models import User, Wishlist
+from users.serializers.serializers import UserRetrieveSerializer
 from users.serializers.wishlist import WishlistModelSerializer
 from users.serializers import (
     CheckActivationSerializer,
@@ -25,8 +27,19 @@ class UserListCreateAPIView(ListCreateAPIView):
 class UserRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserModelSerializer
-    permission_classes = (AllowAny,)
     parser_classes = (FormParser, MultiPartParser)
+
+    def get_queryset(self):
+        user = User.objects.filter(id=self.request.user.id)
+
+
+class UserRetrieveAPIView(RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserRetrieveSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
 
 
 class ActivationUserGenericAPIView(GenericAPIView):

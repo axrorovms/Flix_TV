@@ -26,7 +26,7 @@ class UserModelSerializer(ModelSerializer):
             'first_name', 'last_name',
             'email', 'username',
             'subscription', 'status', 'created_at',
-            're_password', 'password')
+            'password', 're_password', 'is_moderator', 'is_staff')
 
     def to_representation(self, instance: User):
         rep = super().to_representation(instance)
@@ -57,6 +57,17 @@ class UserModelSerializer(ModelSerializer):
         self.context['user'] = user
         ActivationEmail(self.context.get('request'), self.context).send([user.email])
         return user
+
+
+class UserRetrieveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'id', 'image',
+            'first_name', 'last_name',
+            'email', 'username',
+            'subscription', 'status', 'created_at',
+            'is_moderator', 'is_staff')
 
 
 class CheckActivationSerializer(serializers.Serializer):

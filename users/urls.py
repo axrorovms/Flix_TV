@@ -8,7 +8,7 @@ from users.views import (
     ActivationUserGenericAPIView,
     PasswordResetGenericAPIView,
     PasswordResetConfirmUpdateAPIView,
-    WishlistListCreateAPIView,
+    WishlistListCreateAPIView, UserRetrieveAPIView,
 
 )
 
@@ -19,7 +19,9 @@ urlpatterns = [
     path('activate/', ActivationUserGenericAPIView.as_view(), name='activated_account'),
     path('reset-password/', PasswordResetGenericAPIView.as_view(), name='reset_password'),
     path('reset-password-confirm/', PasswordResetConfirmUpdateAPIView.as_view(), name='reset_password_confirm'),
-    path('<int:pk>', UserRetrieveUpdateDestroyAPIView.as_view()),
+    path('change/<int:pk>', UserRetrieveUpdateDestroyAPIView.as_view()),
+    path('getme/', UserRetrieveAPIView.as_view()),
+
 
     path('token/', TokenObtainPairView.as_view(parser_classes = (FormParser, MultiPartParser)), name='token_create'),
     path('token/refresh/', TokenRefreshView.as_view(parser_classes = (FormParser, MultiPartParser)), name='token_refresh'),
