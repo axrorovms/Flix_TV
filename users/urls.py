@@ -8,7 +8,8 @@ from users.views import (
     ActivationUserGenericAPIView,
     PasswordResetGenericAPIView,
     PasswordResetConfirmUpdateAPIView,
-    WishlistListCreateAPIView, UserRetrieveAPIView,
+    WishlistListCreateAPIView,
+    UserRetrieveAPIView,
 
 )
 
