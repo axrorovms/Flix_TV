@@ -1,5 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Count
+from django.db.models import Count, F
 from users.models import User
 
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView, GenericAPIView
@@ -35,6 +35,10 @@ class MovieRetrieveAPIView(RetrieveAPIView):
         user_id = request.user.id
         slug = self.kwargs['slug']
         data = self.get_suitable_movie_data(user_id, slug)
+
+        if data.get('slug'):
+            Movie.objects.filter(slug=data['slug']).update(views=F('views') + 1)
+
         return Response(data)
 
     @staticmethod
